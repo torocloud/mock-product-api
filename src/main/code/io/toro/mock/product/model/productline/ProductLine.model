@@ -1,0 +1,21 @@
+{
+    "name": "ProductLine",
+    "type": "model",
+    "gloopProperties": [
+        {
+            "name": "productLine",
+            "maxLength": 255
+        },
+        {
+            "name": "textDescription"
+        },
+        {
+            "name": "htmlDescription"
+        },
+        {
+            "name": "customField",
+            "type": "model",
+            "allowExtraProperties": true
+        }
+    ]
+}

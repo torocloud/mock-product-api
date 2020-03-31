@@ -1,0 +1,279 @@
+{
+    "input": [
+        {
+            "name": "productCode"
+        },
+        {
+            "name": "quantity",
+            "type": "integer"
+        }
+    ],
+    "output": [
+        {
+            "name": "response",
+            "type": "model",
+            "reference": "io.toro.mock.product.model.Response"
+        },
+        {
+            "name": "responseCode",
+            "type": "integer"
+        }
+    ],
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "type": "invokeGloop",
+                    "name": "io.toro.mock.product.api.controller.product.GetProduct",
+                    "declare": [
+                        {
+                            "variables": [
+                                {
+                                    "name": "getProductResponse",
+                                    "type": "model",
+                                    "gloopProperties": [
+                                        {
+                                            "name": "response",
+                                            "type": "model",
+                                            "reference": "io.toro.mock.product.model.Response"
+                                        },
+                                        {
+                                            "name": "responseCode",
+                                            "type": "integer"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "productCode"
+                            ],
+                            "to": [
+                                "productCode"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "response"
+                            ],
+                            "to": [
+                                "getProductResponse",
+                                "response"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "responseCode"
+                            ],
+                            "to": [
+                                "getProductResponse",
+                                "responseCode"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "fork",
+                    "expression": "getProductResponse.responseCode",
+                    "children": [
+                        {
+                            "label": "$else",
+                            "lines": [
+                                {
+                                    "from": [
+                                        "getProductResponse",
+                                        "response"
+                                    ],
+                                    "to": [
+                                        "response"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "getProductResponse",
+                                        "responseCode"
+                                    ],
+                                    "to": [
+                                        "responseCode"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "block",
+                            "label": "200",
+                            "children": [
+                                {
+                                    "type": "fork",
+                                    "expression": "quantity < 0",
+                                    "children": [
+                                        {
+                                            "type": "invokeCode",
+                                            "label": "true",
+                                            "className": "io.toro.martini.LoggerMethods",
+                                            "methodName": "error",
+                                            "parameters": [
+                                                "java.lang.String"
+                                            ],
+                                            "inputs": [
+                                                {
+                                                    "type": "set",
+                                                    "expression": "Product quantity cannot be lower than 0",
+                                                    "to": [
+                                                        "message"
+                                                    ]
+                                                }
+                                            ],
+                                            "outputs": [
+                                                {
+                                                    "from": [
+                                                        "output"
+                                                    ],
+                                                    "to": [
+                                                        "response",
+                                                        "message"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "set",
+                                                    "expression": "400",
+                                                    "to": [
+                                                        "responseCode"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "set",
+                                                    "expression": "ERROR",
+                                                    "to": [
+                                                        "response",
+                                                        "result"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "invokeGloop",
+                                            "label": "false",
+                                            "name": "io.toro.mock.product.sql.product.UpdateProductQuantity",
+                                            "inputs": [
+                                                {
+                                                    "from": [
+                                                        "productCode"
+                                                    ],
+                                                    "to": [
+                                                        "updateProductQuantityInput",
+                                                        "productCode"
+                                                    ]
+                                                },
+                                                {
+                                                    "from": [
+                                                        "quantity"
+                                                    ],
+                                                    "to": [
+                                                        "updateProductQuantityInput",
+                                                        "quantityInStock"
+                                                    ]
+                                                }
+                                            ],
+                                            "outputs": [
+                                                {
+                                                    "type": "set",
+                                                    "expression": "Updated",
+                                                    "to": [
+                                                        "response",
+                                                        "result"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "set",
+                                                    "expression": "\"Successfully updated quantity of product with product code: ${productCode} with value ${quantity}.\"",
+                                                    "evaluate": true,
+                                                    "to": [
+                                                        "response",
+                                                        "message"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "set",
+                                                    "expression": "200",
+                                                    "to": [
+                                                        "responseCode"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "type": "invokeCode",
+                    "comments": "Log the exception in the console, and then map the appropriate response message and code",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "gloopStackTrace"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "responseCode"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "ERROR",
+                            "to": [
+                                "response",
+                                "result"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "$gloopException.message",
+                            "evaluate": true,
+                            "to": [
+                                "response",
+                                "message"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

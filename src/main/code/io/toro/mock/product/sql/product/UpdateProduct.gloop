@@ -1,0 +1,57 @@
+{
+    "type": "customSql",
+    "comments": "### UpdateItem SQL query\n\nUpdates an inventory item record in the database. The database columns will update its value if the parameters provided is not null.",
+    "input": [
+        {
+            "name": "updateProductInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "productName"
+                },
+                {
+                    "name": "productLine"
+                },
+                {
+                    "name": "productScale"
+                },
+                {
+                    "name": "productVendor"
+                },
+                {
+                    "name": "productDescription"
+                },
+                {
+                    "name": "quantityInStock",
+                    "type": "integer"
+                },
+                {
+                    "name": "buyPrice",
+                    "type": "bigDecimal"
+                },
+                {
+                    "name": "msrp",
+                    "type": "bigDecimal"
+                },
+                {
+                    "name": "customField"
+                },
+                {
+                    "name": "productCode"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "updateCount",
+            "type": "integer"
+        }
+    ],
+    "connectionPoolName": "mock_product_api",
+    "sqlType": "UPDATE",
+    "query": "UPDATE \"PRODUCTS\"\nSET\n    \"PRODUCT_NAME\" = COALESCE( :productName, \"PRODUCT_NAME\" ),\n    \"PRODUCT_LINE\" = COALESCE( :productLine, \"PRODUCT_LINE\" ),\n    \"PRODUCT_SCALE\" = COALESCE( :productScale, \"PRODUCT_SCALE\" ),\n    \"PRODUCT_VENDOR\" = COALESCE( :productVendor, \"PRODUCT_VENDOR\" ),\n    \"PRODUCT_DESCRIPTION\" = COALESCE( :productDescription, \"PRODUCT_DESCRIPTION\" ),\n    \"QUANTITY_IN_STOCK\" = COALESCE( :quantityInStock, \"QUANTITY_IN_STOCK\" ),\n    \"BUY_PRICE\" = COALESCE( :buyPrice, \"BUY_PRICE\" ),\n    \"MSRP\" = COALESCE( :msrp, \"MSRP\" ),\n    \"CUSTOM_FIELD\" = COALESCE( :customField, CUSTOM_FIELD )\nWHERE (\n    \"PRODUCT_CODE\" = :productCode\n)"
+}

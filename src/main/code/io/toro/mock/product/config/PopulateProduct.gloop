@@ -1,0 +1,310 @@
+{
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "declare": [
+                        {
+                            "variables": [
+                                {
+                                    "name": "products",
+                                    "type": "model",
+                                    "array": true,
+                                    "reference": "io.toro.mock.product.model.product.Product"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "declare": [
+                        {
+                            "variables": [
+                                {
+                                    "name": "inputStream",
+                                    "type": "object",
+                                    "objectClassName": "java.io.InputStream"
+                                }
+                            ]
+                        }
+                    ],
+                    "className": "io.toro.martini.FileMethods",
+                    "methodName": "resourceStream",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.String",
+                        "io.toro.gloop.engine.GloopExecutionContext"
+                    ],
+                    "inputs": [
+                        {
+                            "type": "set",
+                            "expression": "resources/products.csv",
+                            "to": [
+                                "resource"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "output"
+                            ],
+                            "to": [
+                                "inputStream"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.FlatFileMethods",
+                    "methodName": "getDelimitedFileInputCursor",
+                    "parameters": [
+                        "java.io.InputStream",
+                        "java.lang.String",
+                        "char",
+                        "java.lang.Character",
+                        "java.lang.Character",
+                        "java.lang.Character",
+                        "int",
+                        "boolean",
+                        "boolean",
+                        "boolean",
+                        "java.lang.String",
+                        "java.lang.String",
+                        "io.toro.gloop.object.property.GloopModel",
+                        "java.lang.String[]",
+                        "java.lang.String",
+                        "io.toro.gloop.engine.GloopExecutionContext"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "inputStream"
+                            ],
+                            "to": [
+                                "flatFileData"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "products.keySet()",
+                            "evaluate": true,
+                            "to": [
+                                "fieldNames"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "\"",
+                            "to": [
+                                "quoteCharacter"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "output"
+                            ],
+                            "to": [
+                                "products"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "info",
+                    "parameters": [
+                        "java.lang.String"
+                    ],
+                    "inputs": [
+                        {
+                            "type": "set",
+                            "expression": "Inserting dummy data into PRODUCTS table...",
+                            "to": [
+                                "message"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "iterate",
+                    "comments": "populate items table",
+                    "input": {
+                        "path": [
+                            "products"
+                        ]
+                    },
+                    "children": [
+                        {
+                            "type": "block",
+                            "comments": "swallows exception if product fails to insert and move on to the next product ",
+                            "blockType": "TRY_CATCH",
+                            "children": [
+                                {
+                                    "type": "invokeGloop",
+                                    "name": "io.toro.mock.product.sql.product.InsertProduct",
+                                    "inputs": [
+                                        {
+                                            "from": [
+                                                "products",
+                                                "productCode"
+                                            ],
+                                            "to": [
+                                                "insertProductInput",
+                                                "productCode"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "products",
+                                                "productName"
+                                            ],
+                                            "to": [
+                                                "insertProductInput",
+                                                "productName"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "products",
+                                                "productLine"
+                                            ],
+                                            "to": [
+                                                "insertProductInput",
+                                                "productLine"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "products",
+                                                "productScale"
+                                            ],
+                                            "to": [
+                                                "insertProductInput",
+                                                "productScale"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "products",
+                                                "productVendor"
+                                            ],
+                                            "to": [
+                                                "insertProductInput",
+                                                "productVendor"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "products",
+                                                "productDescription"
+                                            ],
+                                            "to": [
+                                                "insertProductInput",
+                                                "productDescription"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "products",
+                                                "quantityInStock"
+                                            ],
+                                            "to": [
+                                                "insertProductInput",
+                                                "quantityInStock"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "products",
+                                                "buyPrice"
+                                            ],
+                                            "to": [
+                                                "insertProductInput",
+                                                "buyPrice"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "products",
+                                                "msrp"
+                                            ],
+                                            "to": [
+                                                "insertProductInput",
+                                                "msrp"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "{}",
+                                            "to": [
+                                                "insertProductInput",
+                                                "customField"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "invokeCode",
+                                    "className": "io.toro.martini.LoggerMethods",
+                                    "methodName": "println",
+                                    "parameters": [
+                                        "java.lang.String"
+                                    ],
+                                    "inputs": [
+                                        {
+                                            "type": "set",
+                                            "expression": "products.asJson()",
+                                            "evaluate": true,
+                                            "to": [
+                                                "message"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "gloopStackTrace"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

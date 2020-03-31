@@ -1,0 +1,36 @@
+{
+    "type": "customSql",
+    "comments": "### UpdateItem SQL query\n\nUpdates an inventory item record in the database. The database columns will update its value if the parameters provided is not null.",
+    "input": [
+        {
+            "name": "updateProductLineInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "textDescription"
+                },
+                {
+                    "name": "htmlDescription"
+                },
+                {
+                    "name": "customField"
+                },
+                {
+                    "name": "productLine"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "updateCount",
+            "type": "integer"
+        }
+    ],
+    "connectionPoolName": "mock_product_api",
+    "sqlType": "UPDATE",
+    "query": "UPDATE \"PRODUCT_LINES\"\nSET\n    \"TEXT_DESCRIPTION\" = COALESCE( :textDescription, \"TEXT_DESCRIPTION\" ),\n    \"HTML_DESCRIPTION\" = COALESCE( :htmlDescription, \"HTML_DESCRIPTION\" ),\n    \"CUSTOM_FIELD\" = COALESCE( :customField, \"CUSTOM_FIELD\" )\nWHERE (\n    \"PRODUCT_LINE\" = :productLine\n)"
+}

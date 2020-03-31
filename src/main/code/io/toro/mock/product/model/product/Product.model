@@ -1,0 +1,43 @@
+{
+    "name": "Product",
+    "type": "model",
+    "gloopProperties": [
+        {
+            "name": "productCode",
+            "minLength": 1,
+            "maxLength": 255
+        },
+        {
+            "name": "productName"
+        },
+        {
+            "name": "productLine"
+        },
+        {
+            "name": "productScale"
+        },
+        {
+            "name": "productVendor"
+        },
+        {
+            "name": "productDescription"
+        },
+        {
+            "name": "quantityInStock",
+            "type": "integer"
+        },
+        {
+            "name": "buyPrice",
+            "type": "bigDecimal"
+        },
+        {
+            "name": "msrp",
+            "type": "bigDecimal"
+        },
+        {
+            "name": "customField",
+            "type": "model",
+            "allowExtraProperties": true
+        }
+    ]
+}

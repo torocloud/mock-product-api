@@ -1,0 +1,81 @@
+{
+    "type": "customSql",
+    "comments": "### SelectItem SQL query\n\nExecutes a SELECT query that pulls the record from the database using the provided itemId or sku",
+    "input": [
+        {
+            "name": "selectProductInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "productCode"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "selectProductOutput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "PRODUCT_CODE",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "PRODUCT_NAME",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "PRODUCT_LINE",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "PRODUCT_SCALE",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "PRODUCT_VENDOR",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "PRODUCT_DESCRIPTION",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "QUANTITY_IN_STOCK",
+                    "type": "integer",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "BUY_PRICE",
+                    "type": "bigDecimal",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "MSRP",
+                    "type": "bigDecimal",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "CUSTOM_FIELD",
+                    "required": true
+                }
+            ]
+        }
+    ],
+    "connectionPoolName": "mock_product_api",
+    "sqlType": "SELECT_SINGLE",
+    "query": "SELECT *\nFROM\n    \"PRODUCTS\"\nWHERE (\n    \"PRODUCT_CODE\" = :productCode\n)\n"
+}

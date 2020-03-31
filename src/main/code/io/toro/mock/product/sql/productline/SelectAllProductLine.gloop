@@ -1,0 +1,48 @@
+{
+    "type": "customSql",
+    "comments": "### SelecAllItem SQL query\n\nExecutes a `SELECT *` query to retrieve all records from the database",
+    "input": [
+        {
+            "name": "selectAllProductLineInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "$limit",
+                    "type": "integer"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "selectAllProductLineInputCursor",
+            "type": "model",
+            "array": true,
+            "gloopProperties": [
+                {
+                    "name": "PRODUCT_LINE",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "TEXT_DESCRIPTION",
+                    "required": true
+                },
+                {
+                    "name": "HTML_DESCRIPTION",
+                    "required": true
+                },
+                {
+                    "name": "CUSTOM_FIELD",
+                    "required": true
+                }
+            ]
+        }
+    ],
+    "connectionPoolName": "mock_product_api",
+    "sqlType": "SELECT_MULTI",
+    "query": "SELECT *\nFROM\n    \"PRODUCT_LINES\""
+}

@@ -1,0 +1,46 @@
+{
+    "type": "customSql",
+    "comments": "### SelectItem SQL query\n\nExecutes a SELECT query that pulls the record from the database using the provided itemId or sku",
+    "input": [
+        {
+            "name": "selectProductLineInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "productLine"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "selectProductLineOutput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "PRODUCT_LINE",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "TEXT_DESCRIPTION",
+                    "required": true
+                },
+                {
+                    "name": "HTML_DESCRIPTION",
+                    "required": true
+                },
+                {
+                    "name": "CUSTOM_FIELD",
+                    "required": true
+                }
+            ]
+        }
+    ],
+    "connectionPoolName": "mock_product_api",
+    "sqlType": "SELECT_SINGLE",
+    "query": "SELECT *\nFROM\n    \"PRODUCT_LINES\"\nWHERE (\n    \"PRODUCT_LINE\" = :productLine\n)"
+}

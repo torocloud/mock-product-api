@@ -1,0 +1,191 @@
+{
+    "comments": "### Configure Webhook\n\nThis service will configure the webhook of the mock Inventory API",
+    "input": [
+        {
+            "name": "url"
+        }
+    ],
+    "output": [
+        {
+            "name": "responseCode",
+            "type": "integer",
+            "defaultValue": 200
+        },
+        {
+            "name": "response",
+            "type": "model",
+            "reference": "io.toro.mock.product.model.Response"
+        }
+    ],
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "type": "fork",
+                    "comments": "Check if the provided url matches the regex pattern.",
+                    "expression": "url.matches( 'https?:\\\\/\\\\/(www\\\\\\\\.)?[-a-zA-Z0-9@:%._\\\\\\\\+~#=]{2,256}\\\\b([-a-zA-Z0-9@:%_\\\\+.~#!?&//=]*)' )",
+                    "children": [
+                        {
+                            "type": "invokeCode",
+                            "label": "true",
+                            "comments": "If the given url is a valid url, save it to the package property",
+                            "className": "io.toro.martini.GroovyMethods",
+                            "methodName": "savePackageProperty",
+                            "parameters": [
+                                "java.lang.String",
+                                "java.lang.String"
+                            ],
+                            "inputs": [
+                                {
+                                    "from": [
+                                        "url"
+                                    ],
+                                    "to": [
+                                        "value"
+                                    ]
+                                },
+                                {
+                                    "type": "set",
+                                    "expression": "webhookurl",
+                                    "to": [
+                                        "key"
+                                    ]
+                                }
+                            ],
+                            "outputs": [
+                                {
+                                    "type": "set",
+                                    "expression": "200",
+                                    "to": [
+                                        "responseCode"
+                                    ]
+                                },
+                                {
+                                    "type": "set",
+                                    "expression": "SUCCESS",
+                                    "to": [
+                                        "response",
+                                        "result"
+                                    ]
+                                },
+                                {
+                                    "type": "set",
+                                    "expression": "Successfully configured webhook!",
+                                    "to": [
+                                        "response",
+                                        "message"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "invokeCode",
+                            "label": "false",
+                            "comments": "Log the error in the console, and then map the appropriate response message and code",
+                            "className": "io.toro.martini.LoggerMethods",
+                            "methodName": "error",
+                            "parameters": [
+                                "java.lang.String"
+                            ],
+                            "inputs": [
+                                {
+                                    "type": "set",
+                                    "expression": "Incorrect URL format",
+                                    "to": [
+                                        "message"
+                                    ]
+                                }
+                            ],
+                            "outputs": [
+                                {
+                                    "type": "set",
+                                    "expression": "400",
+                                    "to": [
+                                        "responseCode"
+                                    ]
+                                },
+                                {
+                                    "type": "set",
+                                    "expression": "ERROR",
+                                    "to": [
+                                        "response",
+                                        "result"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "output"
+                                    ],
+                                    "to": [
+                                        "response",
+                                        "message"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "type": "invokeCode",
+                    "comments": "Log the exception thrown when this service is executed",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "gloopStackTrace"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "responseCode"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "ERROR",
+                            "to": [
+                                "response",
+                                "result"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "output"
+                            ],
+                            "to": [
+                                "response",
+                                "message"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

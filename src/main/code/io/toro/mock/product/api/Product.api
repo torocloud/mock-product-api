@@ -1,0 +1,300 @@
+{
+    "info": {
+        "version": "1.0.0-SNAPSHOT"
+    },
+    "basePath": "/mock-product-api",
+    "paths": {
+        "/products": {
+            "get": {
+                "tags": [
+                    "product"
+                ],
+                "description": "Get a list of products",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "body": "products",
+                        "description": "Returns a list of products"
+                    },
+                    "500": {
+                        "body": "response",
+                        "description": "Encountered an exception while trying to retrieve a list of products"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.product.ListProduct",
+                "responseCodeField": "responseCode"
+            },
+            "post": {
+                "tags": [
+                    "product"
+                ],
+                "description": "Creating a product",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "bodyParameter": {
+                    "name": "product",
+                    "description": "product"
+                },
+                "responses": {
+                    "-1": {
+                        "body": "response",
+                        "description": "Depending on the request response, It will either return a success or error result, with a short summary of the success or error  message\n\n* 201 if the productis created.\n* 400 if there's an SQLIntegrityConstraintViolationException. This means that there must be a duplicate entry for the entry you are trying to create\n* 500 if the request encountered a server error",
+                        "headers": "headers"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.product.CreateProduct",
+                "responseCodeField": "responseCode"
+            },
+            "patch": {
+                "tags": [
+                    "product"
+                ],
+                "description": "Updating a product",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "bodyParameter": {
+                    "name": "product",
+                    "description": "product"
+                },
+                "responses": {
+                    "-1": {
+                        "body": "response",
+                        "description": "Details about the result of the request\n\n* 201 if the product is created.\n* 400 if there's an SQLIntegrityConstraintViolationException. This means that there must be a duplicate entry for the entry you are trying to create.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error."
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.product.UpdateProduct",
+                "responseCodeField": "responseCode"
+            }
+        },
+        "/products/{productCode}": {
+            "get": {
+                "tags": [
+                    "product"
+                ],
+                "description": "Get a specific product by product code",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "productCode",
+                        "type": "PATH"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "body": "product",
+                        "description": "A product"
+                    },
+                    "404": {
+                        "body": "response",
+                        "description": "product not found"
+                    },
+                    "500": {
+                        "body": "response",
+                        "description": "Unexpected exception"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.product.GetProduct",
+                "responseCodeField": "responseCode"
+            },
+            "delete": {
+                "tags": [
+                    "product"
+                ],
+                "description": "Delete a product by Product code",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "productCode",
+                        "type": "PATH"
+                    }
+                ],
+                "responses": {
+                    "-1": {
+                        "body": "response",
+                        "description": "* 204 if the product is successfully deleted.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error."
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.product.DeleteProduct",
+                "responseCodeField": "responseCode"
+            }
+        },
+        "/products/{productCode}/price": {
+            "post": {
+                "parameters": [
+                    {
+                        "name": "productCode",
+                        "type": "PATH"
+                    },
+                    {
+                        "name": "price",
+                        "type": "FORM"
+                    }
+                ],
+                "responses": {
+                    "-1": {
+                        "body": "response",
+                        "description": "* 200 if the product is successfully updated.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error."
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.product.UpdateProductPrice",
+                "responseCodeField": "responseCode"
+            }
+        },
+        "/products/{productCode}/quantity": {
+            "post": {
+                "description": "Update product stock quantity",
+                "parameters": [
+                    {
+                        "name": "productCode",
+                        "type": "PATH"
+                    },
+                    {
+                        "name": "quantity",
+                        "type": "FORM"
+                    }
+                ],
+                "responses": {
+                    "-1": {
+                        "body": "response",
+                        "description": "* 200 if the product is successfully updated.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error."
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.product.UpdateProductQuantity",
+                "responseCodeField": "responseCode"
+            }
+        },
+        "/product-lines": {
+            "get": {
+                "tags": [
+                    "product-line"
+                ],
+                "description": "List all product lines",
+                "responses": {
+                    "200": {
+                        "body": "productLines",
+                        "description": "A list of product lines"
+                    },
+                    "500": {
+                        "body": "response",
+                        "description": "Unexpected exception thrown"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.productline.ListProductLine",
+                "responseCodeField": "responseCode"
+            },
+            "post": {
+                "tags": [
+                    "product-line"
+                ],
+                "description": "Create a product line",
+                "bodyParameter": {
+                    "name": "productLine",
+                    "description": "productLine"
+                },
+                "responses": {
+                    "-1": {
+                        "body": "response",
+                        "description": "* 400 if there's an SQLIntegrityConstraintViolationException. This means that there must be a duplicate entry for the entry you are trying to create\n* 500 if the request encountered a server error",
+                        "headers": "headers"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.productline.CreateProductLine",
+                "responseCodeField": "responseCode"
+            },
+            "patch": {
+                "tags": [
+                    "product-line"
+                ],
+                "description": "Update a product line",
+                "bodyParameter": {
+                    "name": "productLine",
+                    "description": "productLine"
+                },
+                "responses": {
+                    "-1": {
+                        "body": "response",
+                        "description": "Details about the result of the request\n\n* 201 if the product is created.\n* 400 if there's an SQLIntegrityConstraintViolationException. This means that there must be a duplicate entry for the entry you are trying to create.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error."
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.productline.UpdateProductLine",
+                "responseCodeField": "responseCode"
+            }
+        },
+        "/product-lines/{productLineId}": {
+            "get": {
+                "tags": [
+                    "product"
+                ],
+                "description": "Get a product line from the product line name",
+                "parameters": [
+                    {
+                        "name": "productLineId",
+                        "type": "PATH"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "body": "productLine",
+                        "description": "A product line"
+                    },
+                    "404": {
+                        "body": "response",
+                        "description": "product line not found"
+                    },
+                    "500": {
+                        "body": "response",
+                        "description": "Unexpected exception thrown"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.productline.GetProductLine",
+                "responseCodeField": "responseCode"
+            },
+            "delete": {
+                "tags": [
+                    "product"
+                ],
+                "description": "Delete a product line by product line name",
+                "parameters": [
+                    {
+                        "name": "productLineId",
+                        "type": "PATH"
+                    }
+                ],
+                "responses": {
+                    "-1": {
+                        "body": "response",
+                        "description": "* 204 if the product line is successfully deleted.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error."
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.productline.DeleteProductLine",
+                "responseCodeField": "responseCode"
+            }
+        }
+    }
+}

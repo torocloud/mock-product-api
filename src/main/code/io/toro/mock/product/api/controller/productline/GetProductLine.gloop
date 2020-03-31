@@ -1,0 +1,262 @@
+{
+    "input": [
+        {
+            "name": "productLineId"
+        }
+    ],
+    "output": [
+        {
+            "name": "productLine",
+            "type": "model",
+            "reference": "io.toro.mock.product.model.productline.ProductLine"
+        },
+        {
+            "name": "response",
+            "type": "model",
+            "reference": "io.toro.mock.product.model.Response"
+        },
+        {
+            "name": "responseCode",
+            "type": "integer"
+        }
+    ],
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "type": "invokeGloop",
+                    "name": "io.toro.mock.product.sql.productline.SelectProductLine",
+                    "declare": [
+                        {
+                            "variables": [
+                                {
+                                    "name": "customField"
+                                }
+                            ]
+                        }
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "productLineId"
+                            ],
+                            "to": [
+                                "selectProductLineInput",
+                                "productLine"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "selectProductLineOutput",
+                                "CUSTOM_FIELD"
+                            ],
+                            "to": [
+                                "customField"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectProductLineOutput",
+                                "PRODUCT_LINE"
+                            ],
+                            "to": [
+                                "productLine",
+                                "productLine"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectProductLineOutput",
+                                "TEXT_DESCRIPTION"
+                            ],
+                            "to": [
+                                "productLine",
+                                "textDescription"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectProductLineOutput",
+                                "HTML_DESCRIPTION"
+                            ],
+                            "to": [
+                                "productLine",
+                                "htmlDescription"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "fork",
+                    "expression": "productLine?.productLine",
+                    "children": [
+                        {
+                            "type": "invokeCode",
+                            "label": "$null",
+                            "comments": "If none found, log an error message, and set the appropriate response payload and code (404)",
+                            "className": "io.toro.martini.LoggerMethods",
+                            "methodName": "error",
+                            "parameters": [
+                                "java.lang.String"
+                            ],
+                            "inputs": [
+                                {
+                                    "type": "set",
+                                    "expression": "\"No product line with id \\\"${productLineId}\\\" found.\"",
+                                    "evaluate": true,
+                                    "to": [
+                                        "message"
+                                    ]
+                                }
+                            ],
+                            "outputs": [
+                                {
+                                    "from": [
+                                        "output"
+                                    ],
+                                    "to": [
+                                        "response",
+                                        "message"
+                                    ]
+                                },
+                                {
+                                    "type": "set",
+                                    "expression": "404",
+                                    "to": [
+                                        "responseCode"
+                                    ]
+                                },
+                                {
+                                    "type": "set",
+                                    "expression": "Not Found",
+                                    "to": [
+                                        "response",
+                                        "result"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "fork",
+                            "label": "$else",
+                            "expression": "customField != null",
+                            "children": [
+                                {
+                                    "type": "invokeCode",
+                                    "label": "true",
+                                    "className": "io.toro.martini.JsonMethods",
+                                    "methodName": "jsonStringToGloopObject",
+                                    "parameters": [
+                                        "java.lang.String"
+                                    ],
+                                    "inputs": [
+                                        {
+                                            "from": [
+                                                "customField"
+                                            ],
+                                            "to": [
+                                                "jsonString"
+                                            ]
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "from": [
+                                                "output"
+                                            ],
+                                            "to": [
+                                                "productLine",
+                                                "customField"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "200",
+                                            "to": [
+                                                "responseCode"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "label": "$else",
+                                    "lines": [
+                                        {
+                                            "type": "set",
+                                            "expression": "200",
+                                            "to": [
+                                                "responseCode"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "type": "invokeCode",
+                    "comments": "Log the exception in the console, and then map the appropriate response message and code",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "gloopStackTrace"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "responseCode"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "ERROR",
+                            "to": [
+                                "response",
+                                "result"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "$gloopException.message",
+                            "evaluate": true,
+                            "to": [
+                                "response",
+                                "message"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

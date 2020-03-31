@@ -1,0 +1,27 @@
+{
+    "type": "customSql",
+    "comments": "### DeleteItem SQL query\n\nExecutes a DELETE query for the inventory item that matches the itemId provided",
+    "input": [
+        {
+            "name": "deleteProductLineInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "productLine"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "updateCount",
+            "type": "integer"
+        }
+    ],
+    "connectionPoolName": "mock_product_api",
+    "sqlType": "DELETE",
+    "query": "DELETE FROM \"PRODUCT_LINES\"\nWHERE (\n    \"PRODUCT_LINE\" = :productLine\n)"
+}

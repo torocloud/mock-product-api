@@ -1,0 +1,322 @@
+{
+    "output": [
+        {
+            "name": "products",
+            "type": "model",
+            "array": true,
+            "reference": "io.toro.mock.product.model.product.Product"
+        },
+        {
+            "name": "response",
+            "type": "model",
+            "reference": "io.toro.mock.product.model.Response"
+        },
+        {
+            "name": "responseCode",
+            "type": "integer"
+        }
+    ],
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "type": "invokeGloop",
+                    "name": "io.toro.mock.product.sql.product.SelectAllProduct",
+                    "declare": [
+                        {
+                            "variables": [
+                                {
+                                    "name": "selectAllProductInputCursor",
+                                    "type": "model",
+                                    "array": true,
+                                    "gloopProperties": [
+                                        {
+                                            "name": "PRODUCT_CODE",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "PRODUCT_NAME",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "PRODUCT_LINE",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "PRODUCT_SCALE",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "PRODUCT_VENDOR",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "PRODUCT_DESCRIPTION",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "QUANTITY_IN_STOCK",
+                                            "type": "integer",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "BUY_PRICE",
+                                            "type": "bigDecimal",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "MSRP",
+                                            "type": "bigDecimal",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "CUSTOM_FIELD",
+                                            "required": true
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "selectAllProductInputCursor"
+                            ],
+                            "to": [
+                                "selectAllProductInputCursor"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectAllProductInputCursor"
+                            ],
+                            "to": [
+                                "selectAllProductInputCursor"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "iterate",
+                    "input": {
+                        "path": [
+                            "selectAllProductInputCursor"
+                        ]
+                    },
+                    "output": {
+                        "path": [
+                            "products"
+                        ]
+                    },
+                    "children": [
+                        {
+                            "lines": [
+                                {
+                                    "from": [
+                                        "selectAllProductInputCursor",
+                                        "PRODUCT_CODE"
+                                    ],
+                                    "to": [
+                                        "products",
+                                        "productCode"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectAllProductInputCursor",
+                                        "PRODUCT_NAME"
+                                    ],
+                                    "to": [
+                                        "products",
+                                        "productName"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectAllProductInputCursor",
+                                        "PRODUCT_LINE"
+                                    ],
+                                    "to": [
+                                        "products",
+                                        "productLine"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectAllProductInputCursor",
+                                        "PRODUCT_SCALE"
+                                    ],
+                                    "to": [
+                                        "products",
+                                        "productScale"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectAllProductInputCursor",
+                                        "PRODUCT_VENDOR"
+                                    ],
+                                    "to": [
+                                        "products",
+                                        "productVendor"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectAllProductInputCursor",
+                                        "PRODUCT_DESCRIPTION"
+                                    ],
+                                    "to": [
+                                        "products",
+                                        "productDescription"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectAllProductInputCursor",
+                                        "QUANTITY_IN_STOCK"
+                                    ],
+                                    "to": [
+                                        "products",
+                                        "quantityInStock"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectAllProductInputCursor",
+                                        "BUY_PRICE"
+                                    ],
+                                    "to": [
+                                        "products",
+                                        "buyPrice"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectAllProductInputCursor",
+                                        "MSRP"
+                                    ],
+                                    "to": [
+                                        "products",
+                                        "msrp"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "invokeCode",
+                            "className": "io.toro.martini.JsonMethods",
+                            "methodName": "jsonStringToGloopObject",
+                            "parameters": [
+                                "java.lang.String"
+                            ],
+                            "inputs": [
+                                {
+                                    "from": [
+                                        "selectAllProductInputCursor",
+                                        "CUSTOM_FIELD"
+                                    ],
+                                    "to": [
+                                        "jsonString"
+                                    ]
+                                }
+                            ],
+                            "outputs": [
+                                {
+                                    "from": [
+                                        "output"
+                                    ],
+                                    "to": [
+                                        "products",
+                                        "customField"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "lines": [
+                        {
+                            "type": "set",
+                            "expression": "200",
+                            "to": [
+                                "responseCode"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "type": "invokeCode",
+                    "comments": "Log the exception in the console, and then map the appropriate response message and code",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "gloopStackTrace"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "responseCode"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "ERROR",
+                            "to": [
+                                "response",
+                                "result"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "$gloopException.message",
+                            "evaluate": true,
+                            "to": [
+                                "response",
+                                "message"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

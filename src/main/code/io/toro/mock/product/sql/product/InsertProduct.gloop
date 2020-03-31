@@ -1,0 +1,67 @@
+{
+    "type": "customSql",
+    "comments": "Inserts an inventory item record to the `mock_inventory_api` database",
+    "input": [
+        {
+            "name": "insertProductInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "$getGeneratedKeys",
+                    "type": "boolean",
+                    "defaultValue": false
+                },
+                {
+                    "name": "productCode"
+                },
+                {
+                    "name": "productName"
+                },
+                {
+                    "name": "productLine"
+                },
+                {
+                    "name": "productScale"
+                },
+                {
+                    "name": "productVendor"
+                },
+                {
+                    "name": "productDescription"
+                },
+                {
+                    "name": "quantityInStock",
+                    "type": "integer"
+                },
+                {
+                    "name": "buyPrice",
+                    "type": "bigDecimal"
+                },
+                {
+                    "name": "msrp",
+                    "type": "bigDecimal"
+                },
+                {
+                    "name": "customField"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "updateCount",
+            "type": "integer"
+        },
+        {
+            "name": "generatedKeys",
+            "type": "model",
+            "allowExtraProperties": true
+        }
+    ],
+    "connectionPoolName": "mock_product_api",
+    "sqlType": "INSERT",
+    "query": "INSERT INTO \"PRODUCTS\" (\n    \"PRODUCT_CODE\",\n    \"PRODUCT_NAME\",\n    \"PRODUCT_LINE\",\n    \"PRODUCT_SCALE\",\n    \"PRODUCT_VENDOR\",\n    \"PRODUCT_DESCRIPTION\",\n    \"QUANTITY_IN_STOCK\",\n    \"BUY_PRICE\",\n    \"MSRP\",\n    \"CUSTOM_FIELD\"\n)\nVALUES (\n    :productCode,\n    :productName,\n    :productLine,\n    :productScale,\n    :productVendor,\n    :productDescription,\n    :quantityInStock,\n    :buyPrice,\n    :msrp,\n    :customField\n)"
+}

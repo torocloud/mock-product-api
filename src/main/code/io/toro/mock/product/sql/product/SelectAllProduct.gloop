@@ -1,0 +1,83 @@
+{
+    "type": "customSql",
+    "comments": "### SelecAllItem SQL query\n\nExecutes a `SELECT *` query to retrieve all records from the database",
+    "input": [
+        {
+            "name": "selectAllProductInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "$limit",
+                    "type": "integer"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "selectAllProductInputCursor",
+            "type": "model",
+            "array": true,
+            "gloopProperties": [
+                {
+                    "name": "PRODUCT_CODE",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "PRODUCT_NAME",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "PRODUCT_LINE",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "PRODUCT_SCALE",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "PRODUCT_VENDOR",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "PRODUCT_DESCRIPTION",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "QUANTITY_IN_STOCK",
+                    "type": "integer",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "BUY_PRICE",
+                    "type": "bigDecimal",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "MSRP",
+                    "type": "bigDecimal",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "CUSTOM_FIELD",
+                    "required": true
+                }
+            ]
+        }
+    ],
+    "connectionPoolName": "mock_product_api",
+    "sqlType": "SELECT_MULTI",
+    "query": "SELECT *\nFROM\n    \"PRODUCTS\""
+}

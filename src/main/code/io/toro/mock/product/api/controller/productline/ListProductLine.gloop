@@ -1,0 +1,226 @@
+{
+    "output": [
+        {
+            "name": "productLines",
+            "type": "model",
+            "array": true,
+            "reference": "io.toro.mock.product.model.productline.ProductLine"
+        },
+        {
+            "name": "response",
+            "type": "model",
+            "reference": "io.toro.mock.product.model.Response"
+        },
+        {
+            "name": "responseCode",
+            "type": "integer"
+        }
+    ],
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "type": "invokeGloop",
+                    "name": "io.toro.mock.product.sql.productline.SelectAllProductLine",
+                    "declare": [
+                        {
+                            "variables": [
+                                {
+                                    "name": "selectAllProductLineInputCursor",
+                                    "type": "model",
+                                    "array": true,
+                                    "gloopProperties": [
+                                        {
+                                            "name": "PRODUCT_LINE",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "TEXT_DESCRIPTION",
+                                            "required": true
+                                        },
+                                        {
+                                            "name": "HTML_DESCRIPTION",
+                                            "required": true
+                                        },
+                                        {
+                                            "name": "CUSTOM_FIELD",
+                                            "required": true
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "selectAllProductLineInputCursor"
+                            ],
+                            "to": [
+                                "selectAllProductLineInputCursor"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "iterate",
+                    "input": {
+                        "path": [
+                            "selectAllProductLineInputCursor"
+                        ]
+                    },
+                    "output": {
+                        "path": [
+                            "productLines"
+                        ]
+                    },
+                    "children": [
+                        {
+                            "lines": [
+                                {
+                                    "from": [
+                                        "selectAllProductLineInputCursor",
+                                        "PRODUCT_LINE"
+                                    ],
+                                    "to": [
+                                        "productLines",
+                                        "productLine"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectAllProductLineInputCursor",
+                                        "TEXT_DESCRIPTION"
+                                    ],
+                                    "to": [
+                                        "productLines",
+                                        "textDescription"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectAllProductLineInputCursor",
+                                        "HTML_DESCRIPTION"
+                                    ],
+                                    "to": [
+                                        "productLines",
+                                        "htmlDescription"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "fork",
+                            "expression": "selectAllProductLineInputCursor?.CUSTOM_FIELD != null",
+                            "children": [
+                                {
+                                    "type": "invokeCode",
+                                    "label": "true",
+                                    "className": "io.toro.martini.JsonMethods",
+                                    "methodName": "jsonStringToGloopObject",
+                                    "parameters": [
+                                        "java.lang.String"
+                                    ],
+                                    "inputs": [
+                                        {
+                                            "from": [
+                                                "selectAllProductLineInputCursor",
+                                                "CUSTOM_FIELD"
+                                            ],
+                                            "to": [
+                                                "jsonString"
+                                            ]
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "from": [
+                                                "output"
+                                            ],
+                                            "to": [
+                                                "productLines",
+                                                "customField"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "lines": [
+                        {
+                            "type": "set",
+                            "expression": "200",
+                            "to": [
+                                "responseCode"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "type": "invokeCode",
+                    "comments": "Log the exception in the console, and then map the appropriate response message and code",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "gloopStackTrace"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "responseCode"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "ERROR",
+                            "to": [
+                                "response",
+                                "result"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "$gloopException.message",
+                            "evaluate": true,
+                            "to": [
+                                "response",
+                                "message"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

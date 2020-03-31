@@ -1,0 +1,31 @@
+{
+    "type": "customSql",
+    "comments": "### UpdateItem SQL query\n\nUpdates an inventory item record in the database. The database columns will update its value if the parameters provided is not null.",
+    "input": [
+        {
+            "name": "updateProductPriceInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "msrp",
+                    "type": "bigDecimal"
+                },
+                {
+                    "name": "productCode"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "updateCount",
+            "type": "integer"
+        }
+    ],
+    "connectionPoolName": "mock_product_api",
+    "sqlType": "UPDATE",
+    "query": "UPDATE \"PRODUCTS\"\nSET\n    \"MSRP\" = :msrp\nWHERE (\n    \"PRODUCT_CODE\" = :productCode\n)"
+}

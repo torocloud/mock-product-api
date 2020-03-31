@@ -1,0 +1,257 @@
+{
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "declare": [
+                        {
+                            "variables": [
+                                {
+                                    "name": "productLines",
+                                    "type": "model",
+                                    "array": true,
+                                    "reference": "io.toro.mock.product.model.productline.ProductLine"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "declare": [
+                        {
+                            "variables": [
+                                {
+                                    "name": "inputStream",
+                                    "type": "object",
+                                    "objectClassName": "java.io.InputStream"
+                                }
+                            ]
+                        }
+                    ],
+                    "className": "io.toro.martini.FileMethods",
+                    "methodName": "resourceStream",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.String",
+                        "io.toro.gloop.engine.GloopExecutionContext"
+                    ],
+                    "inputs": [
+                        {
+                            "type": "set",
+                            "expression": "resources/productLines.csv",
+                            "to": [
+                                "resource"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "output"
+                            ],
+                            "to": [
+                                "inputStream"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.FlatFileMethods",
+                    "methodName": "getDelimitedFileInputCursor",
+                    "parameters": [
+                        "java.io.InputStream",
+                        "java.lang.String",
+                        "char",
+                        "java.lang.Character",
+                        "java.lang.Character",
+                        "java.lang.Character",
+                        "int",
+                        "boolean",
+                        "boolean",
+                        "boolean",
+                        "java.lang.String",
+                        "java.lang.String",
+                        "io.toro.gloop.object.property.GloopModel",
+                        "java.lang.String[]",
+                        "java.lang.String",
+                        "io.toro.gloop.engine.GloopExecutionContext"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "inputStream"
+                            ],
+                            "to": [
+                                "flatFileData"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "productLines.keySet()",
+                            "evaluate": true,
+                            "to": [
+                                "fieldNames"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "\"",
+                            "to": [
+                                "quoteCharacter"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "NULL",
+                            "to": [
+                                "nullString"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "output"
+                            ],
+                            "to": [
+                                "productLines"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "info",
+                    "parameters": [
+                        "java.lang.String"
+                    ],
+                    "inputs": [
+                        {
+                            "type": "set",
+                            "expression": "Inserting dummy data into PRODUCT_LINES table...",
+                            "to": [
+                                "message"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "iterate",
+                    "comments": "populate items table",
+                    "input": {
+                        "path": [
+                            "productLines"
+                        ]
+                    },
+                    "children": [
+                        {
+                            "type": "block",
+                            "comments": "swallows exception if product line fails to insert and move on to the next product line",
+                            "blockType": "TRY_CATCH",
+                            "children": [
+                                {
+                                    "type": "invokeGloop",
+                                    "name": "io.toro.mock.product.sql.productline.InsertProductLine",
+                                    "inputs": [
+                                        {
+                                            "from": [
+                                                "productLines",
+                                                "productLine"
+                                            ],
+                                            "to": [
+                                                "insertProductLineInput",
+                                                "productLine"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "productLines",
+                                                "textDescription"
+                                            ],
+                                            "to": [
+                                                "insertProductLineInput",
+                                                "textDescription"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "productLines",
+                                                "htmlDescription"
+                                            ],
+                                            "to": [
+                                                "insertProductLineInput",
+                                                "htmlDescription"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "{}",
+                                            "to": [
+                                                "insertProductLineInput",
+                                                "customField"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "invokeCode",
+                                    "className": "io.toro.martini.LoggerMethods",
+                                    "methodName": "println",
+                                    "parameters": [
+                                        "java.lang.String"
+                                    ],
+                                    "inputs": [
+                                        {
+                                            "type": "set",
+                                            "expression": "productLines.asJson()",
+                                            "evaluate": true,
+                                            "to": [
+                                                "message"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "gloopStackTrace"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
