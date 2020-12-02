@@ -1,26 +1,50 @@
 {
+    "authTypes": [
+        "BASIC"
+    ],
+    "groups": [
+        "ESBAPIAdminGroup"
+    ],
     "info": {
-        "version": "1.0.0-SNAPSHOT"
+        "title": "Mock Product API",
+        "description": "This is a sample product api. This can be used for mocking or testing APIs.\n\n### Sending Authenticated Requests\n\nYou can use your ECC account to send authenticated request to the API. Your ECC credentials must be sent in the `Authorization` header in the HTTP request\n\n#### To authenticate a request with basic authentication\n\n1. Combine your email and password with a colon (`:`). e.g. `jdoe@mailinator.com:pa$$w0rd`\n2. Encode the resulting string in Base64\n3. Include an Authorization header in the HTTP request containing the base64-encoded string. Example: ```\nAuthorization: Basic amRvZUBtYWlsaW5hdG9yLmNvbTpwYSQkdzByZA==```",
+        "contact": {
+            "name": "TORO Cloud"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0"
+        },
+        "version": "1.0.0"
     },
     "basePath": "/mock-product-api",
     "paths": {
         "/products": {
             "get": {
                 "tags": [
-                    "product"
+                    "Products"
                 ],
-                "description": "Get a list of products",
+                "summary": "Get a list of products",
+                "description": "Returns a list of stored products in the API",
                 "produces": [
                     "application/json"
                 ],
                 "responses": {
                     "200": {
-                        "body": "products",
-                        "description": "Returns a list of products"
+                        "body": "response",
+                        "description": "If the request is successful.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"SUCCESS\",\n    \"message\": \"Successfully fetched products.\",\n    \"products\": [\n        {\n            \"productCode\": \"S10_1678\",\n            \"productName\": \"1969 Harley Davidson Ultimate Chopper\",\n            \"productLine\": \"Motorcycles\",\n            \"productScale\": \"01:10\",\n            \"productVendor\": \"Min Lin Diecast\",\n            \"productDescription\": \"This replica features working kickstand, front suspension, gear-shift lever, footbrake lever, drive chain, wheels and steering. All parts are particularly delicate due to their precise scale and require special care and attention.\",\n            \"quantityInStock\": 7933,\n            \"buyPrice\": 48.81,\n            \"msrp\": 95.70,\n            \"customField\": {\n\n            }\n        },\n        {\n            \"productCode\": \"S10_1949\",\n            \"productName\": \"1952 Alpine Renault 1300\",\n            \"productLine\": \"Classic Cars\",\n            \"productScale\": \"01:10\",\n            \"productVendor\": \"Classic Metal Creations\",\n            \"productDescription\": \"Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.\",\n            \"quantityInStock\": 7305,\n            \"buyPrice\": 98.58,\n            \"msrp\": 214.30,\n            \"customField\": {\n\n            }\n        },\n        {\n            \"productCode\": \"S72_3212\",\n            \"productName\": \"Pont Yacht\",\n            \"productLine\": \"Ships\",\n            \"productScale\": \"02:12\",\n            \"productVendor\": \"Unimax Art Galleries\",\n            \"productDescription\": \"Measures 38 inches Long x 33 3/4 inches High. Includes a stand.Many extras including rigging, long boats, pilot house, anchors, etc. Comes with 2 masts, all square-rigged\",\n            \"quantityInStock\": 414,\n            \"buyPrice\": 33.30,\n            \"msrp\": 54.60,\n            \"customField\": {\n\n            }\n        }\n    ]\n}"
+                        }
                     },
                     "500": {
-                        "body": "response",
-                        "description": "Encountered an exception while trying to retrieve a list of products"
+                        "body": "APIException",
+                        "description": "If the server encountered an exception while trying to retrieve a list of products.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 500,\n    \"message\": \"Encountered an exception while processing the request.\"\n}"
+                        }
                     }
                 },
                 "operationType": "gloop",
@@ -29,9 +53,10 @@
             },
             "post": {
                 "tags": [
-                    "product"
+                    "Products"
                 ],
-                "description": "Creating a product",
+                "summary": "Create a new product",
+                "description": "Adds a new product in the api.",
                 "consumes": [
                     "application/json"
                 ],
@@ -39,14 +64,25 @@
                     "application/json"
                 ],
                 "bodyParameter": {
-                    "name": "product",
-                    "description": "product"
+                    "name": "product"
                 },
                 "responses": {
-                    "-1": {
+                    "201": {
                         "body": "response",
-                        "description": "Depending on the request response, It will either return a success or error result, with a short summary of the success or error  message\n\n* 201 if the productis created.\n* 400 if there's an SQLIntegrityConstraintViolationException. This means that there must be a duplicate entry for the entry you are trying to create\n* 500 if the request encountered a server error",
-                        "headers": "headers"
+                        "description": "If the request is succesful.",
+                        "headers": "headers",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"SUCCESS\",\n    \"message\": \"Successfully created product with product code: S700_1691.\",\n    \"product\": {\n        \"productCode\": \"S700_1691\",\n        \"productName\": \"American Airlines: B767-300\",\n        \"productLine\": \"Planes\",\n        \"productScale\": \"12:40\",\n        \"productVendor\": \"Min Lin Diecast\",\n        \"productDescription\": \"Exact replia with official logos and insignias and retractable wheels\",\n        \"quantityInStock\": 5841,\n        \"buyPrice\": 51.15,\n        \"msrp\": 91.34,\n        \"customField\": {\n\n        }\n    }\n}"
+                        }
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "If the server encountered an excetion while processing the request.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 500,\n    \"message\": \"Encountered an exception while processing the request.\"\n}"
+                        }
                     }
                 },
                 "operationType": "gloop",
@@ -55,9 +91,10 @@
             },
             "patch": {
                 "tags": [
-                    "product"
+                    "Products"
                 ],
-                "description": "Updating a product",
+                "summary": "Update a product",
+                "description": "Updates information about a a product.",
                 "consumes": [
                     "application/json"
                 ],
@@ -69,9 +106,37 @@
                     "description": "product"
                 },
                 "responses": {
-                    "-1": {
+                    "200": {
                         "body": "response",
-                        "description": "Details about the result of the request\n\n* 201 if the product is created.\n* 400 if there's an SQLIntegrityConstraintViolationException. This means that there must be a duplicate entry for the entry you are trying to create.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error."
+                        "description": "Details about the result of the request\n\n* 201 if the product is created.\n* 400 if there's an SQLIntegrityConstraintViolationException. This means that there must be a duplicate entry for the entry you are trying to create.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"SUCCESS\",\n    \"message\": \"Successfully updated product with code: S700_1691\",\n    \"product\": {\n        \"productCode\": \"S700_1691\",\n        \"productName\": \"American Airlines: B767-300\",\n        \"productLine\": \"Planes\",\n        \"productScale\": \"12:40\",\n        \"productVendor\": \"Min Lin Diecast\",\n        \"productDescription\": \"Exact replica with official logos and insignias and retractable wheels\",\n        \"quantityInStock\": 5841,\n        \"buyPrice\": 51.15,\n        \"msrp\": 91.34,\n        \"customField\": {\n\n        }\n    }\n}"
+                        }
+                    },
+                    "400": {
+                        "body": "APIException",
+                        "description": "If the update failed upon saving or encountered an error while saving the product.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 400,\n    \"message\": \"Product failed to update. Check the logs for more info.\"\n}"
+                        }
+                    },
+                    "404": {
+                        "body": "APIException",
+                        "description": "If the product to be update could not be found, or does not exist.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 404,\n    \"message\": \"No product with code S10_1678 found.\"\n}"
+                        }
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "If the server encountered an exception while processing the request.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 500,\n    \"message\": \"Encountered an exception while processing the request.\"\n}"
+                        }
                     }
                 },
                 "operationType": "gloop",
@@ -82,9 +147,13 @@
         "/products/{productCode}": {
             "get": {
                 "tags": [
-                    "product"
+                    "Products"
                 ],
-                "description": "Get a specific product by product code",
+                "summary": "Returns a single product record",
+                "description": "Get a specific product by product code.",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -96,27 +165,97 @@
                 ],
                 "responses": {
                     "200": {
-                        "body": "product",
-                        "description": "A product"
+                        "body": "response",
+                        "description": "If the request is successful",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"SUCCESS\",\n    \"message\": \"Successfully fetched product with code: S700_1691\",\n    \"product\": {\n        \"productCode\": \"S700_1691\",\n        \"productName\": \"American Airlines: B767-300\",\n        \"productLine\": \"Planes\",\n        \"productScale\": \"12:40\",\n        \"productVendor\": \"Min Lin Diecast\",\n        \"productDescription\": \"Exact replia with official logos and insignias and retractable wheels\",\n        \"quantityInStock\": 5841,\n        \"buyPrice\": 51.15,\n        \"msrp\": 91.34,\n        \"customField\": {\n\n        }\n    }\n}"
+                        }
                     },
                     "404": {
-                        "body": "response",
-                        "description": "product not found"
+                        "body": "APIException",
+                        "description": "If the product is not found, or does not exist.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 404,\n    \"message\": \"Product not found or does not exist.\"\n}"
+                        }
                     },
                     "500": {
-                        "body": "response",
-                        "description": "Unexpected exception"
+                        "body": "APIException",
+                        "description": "If the server encountered an excption while processing the request.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 500,\n    \"message\": \"Encountered an exception while processing the request.\"\n}"
+                        }
                     }
                 },
                 "operationType": "gloop",
                 "operationLocation": "io.toro.mock.product.api.controller.product.GetProduct",
                 "responseCodeField": "responseCode"
             },
+            "post": {
+                "summary": "Update a product MSRP price",
+                "description": "Quickly updates a product's MSRP price.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "productCode",
+                        "type": "PATH"
+                    },
+                    {
+                        "name": "price",
+                        "type": "QUERY"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "body": "response",
+                        "description": "If the request is successful.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"SUCCESS\",\n    \"message\": \"Successfully updated price of product with product code: S700_1691 with value 100.50.\"\n}"
+                        }
+                    },
+                    "400": {
+                        "body": "APIException",
+                        "description": "If the price updated failed due to invalid input.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 400,\n    \"message\": \"Product price cannot be lower than 0.\"\n}"
+                        }
+                    },
+                    "404": {
+                        "body": "APIException",
+                        "description": "If the product to be updated could not be found, or does not exist.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 404,\n    \"message\": \"No product with code S700_1692 found.\"\n}"
+                        }
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "If the server encountered an exception while processing the request.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 500,\n    \"message\": \"Encountered an exception while processing the request.\"\n}"
+                        }
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "io.toro.mock.product.api.controller.product.UpdateProductPrice",
+                "responseCodeField": "responseCode"
+            },
             "delete": {
                 "tags": [
-                    "product"
+                    "Products"
                 ],
-                "description": "Delete a product by Product code",
+                "summary": "Delete a product by Product code",
+                "description": "Removes a product in the api.",
                 "produces": [
                     "application/json"
                 ],
@@ -127,9 +266,29 @@
                     }
                 ],
                 "responses": {
-                    "-1": {
+                    "200": {
                         "body": "response",
-                        "description": "* 204 if the product is successfully deleted.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error."
+                        "description": "* 204 if the product is successfully deleted.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"SUCCESS\",\n    \"message\": \"Successfully deleted product with code: S700_1691\"\n}"
+                        }
+                    },
+                    "404": {
+                        "body": "APIException",
+                        "description": "If the product to be deleted is not found or does not exist.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 404,\n    \"message\": \"No product with code S700_1691 found.\"\n}"
+                        }
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "If the server encountered an error while processing the request.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 500,\n    \"message\": \"Encountered an exception while processing the request.\"\n}"
+                        }
                     }
                 },
                 "operationType": "gloop",
@@ -137,46 +296,53 @@
                 "responseCodeField": "responseCode"
             }
         },
-        "/products/{productCode}/price": {
-            "post": {
-                "parameters": [
-                    {
-                        "name": "productCode",
-                        "type": "PATH"
-                    },
-                    {
-                        "name": "price",
-                        "type": "FORM"
-                    }
-                ],
-                "responses": {
-                    "-1": {
-                        "body": "response",
-                        "description": "* 200 if the product is successfully updated.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error."
-                    }
-                },
-                "operationType": "gloop",
-                "operationLocation": "io.toro.mock.product.api.controller.product.UpdateProductPrice",
-                "responseCodeField": "responseCode"
-            }
-        },
         "/products/{productCode}/quantity": {
             "post": {
-                "description": "Update product stock quantity",
+                "summary": "Update product stock quantity",
+                "description": "Update a product's quantitiy in stock.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "parameters": [
                     {
                         "name": "productCode",
                         "type": "PATH"
-                    },
-                    {
-                        "name": "quantity",
-                        "type": "FORM"
                     }
                 ],
+                "bodyParameter": {
+                    "name": "input"
+                },
                 "responses": {
-                    "-1": {
+                    "200": {
                         "body": "response",
-                        "description": "* 200 if the product is successfully updated.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error."
+                        "description": "If the product quantity was updated successfully.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"SUCCESS\",\n    \"message\": \"Successfully updated product stock.\",\n    \"product\": {\n        \"productCode\": \"S700_1691\",\n        \"productName\": \"American Airlines: B767-300\",\n        \"productLine\": \"Planes\",\n        \"productScale\": \"12:40\",\n        \"productVendor\": \"Min Lin Diecast\",\n        \"productDescription\": \"Exact replia with official logos and insignias and retractable wheels\",\n        \"quantityInStock\": 5841,\n        \"buyPrice\": 51.15,\n        \"msrp\": 91.34,\n        \"customField\": {\n\n        }\n    }\n}"
+                        }
+                    },
+                    "400": {
+                        "body": "APIException",
+                        "description": "If the quantity and method to apply in the update is logically incorrect or if an error has occurred during the update."
+                    },
+                    "404": {
+                        "body": "APIException",
+                        "description": "If the product whose stock will be updated could not be found or does not exist.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 404,\n    \"message\": \"No product with code S700_1691 found.\"\n}"
+                        }
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "If the server encountered an exception while processing the request.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 500,\n    \"message\": \"Encountered an exception while processing the request.\"\n}"
+                        }
                     }
                 },
                 "operationType": "gloop",
@@ -187,17 +353,29 @@
         "/product-lines": {
             "get": {
                 "tags": [
-                    "product-line"
+                    "Product Lines"
                 ],
-                "description": "List all product lines",
+                "summary": "List all product lines",
+                "description": "Returns a list of available product lines in the api.",
+                "produces": [
+                    "application/json"
+                ],
                 "responses": {
                     "200": {
-                        "body": "productLines",
-                        "description": "A list of product lines"
+                        "body": "response",
+                        "description": "If the request is successful.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"SUCCESS\",\n    \"message\": \"Succesfully fetched all product lines.\",\n    \"productLines\": [\n        {\n            \"productLine\": \"Classic Cars\",\n            \"textDescription\": \"Attention car enthusiasts: Make your wildest car ownership dreams come true. Whether you are looking for classic muscle cars, dream sports cars or movie-inspired miniatures, you will find great choices in this category. These replicas feature superb attention to detail and craftsmanship and offer features such as working steering system, opening forward compartment, opening rear trunk with removable spare wheel, 4-wheel independent spring suspension, and so on. The models range in size from 1:10 to 1:24 scale and include numerous limited edition and several out-of-production vehicles. All models include a certificate of authenticity from their manufacturers and come fully assembled and ready for display in the home or office.\",\n            \"customField\": {\n\n            }\n        },\n        {\n            \"productLine\": \"Motorcycles\",\n            \"textDescription\": \"Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic. The models range in size from 1:10 to 1:50 scale and include numerous limited edition and several out-of-production vehicles. All models come fully assembled and ready for display in the home or office. Most include a certificate of authenticity.\",\n            \"customField\": {\n\n            }\n        },\n        {\n            \"productLine\": \"Planes\",\n            \"textDescription\": \"Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers.\",\n            \"customField\": {\n\n            }\n        },\n        {\n            \"productLine\": \"Ships\",\n            \"textDescription\": \"The perfect holiday or anniversary gift for executives, clients, friends, and family. These handcrafted model ships are unique, stunning works of art that will be treasured for generations! They come fully assembled and ready for display in the home or office. We guarantee the highest quality, and best value.\",\n            \"customField\": {\n\n            }\n        },\n        {\n            \"productLine\": \"Trains\",\n            \"textDescription\": \"Model trains are a rewarding hobby for enthusiasts of all ages. Whether you\\\\re looking for collectible wooden trains electric streetcars or locomotives you\\\"ll find a number of great choices for any budget within this category. The interactive aspect of trains makes toy trains perfect for young children. The wooden train sets are ideal for children under the age of 5.\",\n            \"customField\": {\n\n            }\n        },\n        {\n            \"productLine\": \"Trucks and Buses\",\n            \"textDescription\": \"The Truck and Bus models are realistic replicas of buses and specialized trucks produced from the early 1920s to present. The models range in size from 1:12 to 1:50 scale and include numerous limited edition and several out-of-production vehicles. Materials used include tin, diecast and plastic. All models include a certificate of authenticity from their manufacturers and are a perfect ornament for the home and office.\",\n            \"customField\": {\n\n            }\n        },\n        {\n            \"productLine\": \"Vintage Cars\",\n            \"textDescription\": \"Our Vintage Car models realistically portray automobiles produced from the early 1900s through the 1940s. Materials used include Bakelite, diecast, plastic and wood. Most of the replicas are in the 1:18 and 1:24 scale sizes, which provide the optimum in detail and accuracy. Prices range from $30.00 up to $180.00 for some special limited edition replicas. All models include a certificate of authenticity from their manufacturers and come fully assembled and ready for display in the home or office.\",\n            \"customField\": {\n\n            }\n        }\n    ]\n}"
+                        }
                     },
                     "500": {
-                        "body": "response",
-                        "description": "Unexpected exception thrown"
+                        "body": "APIException",
+                        "description": "If the server encountered an exception while processing the request.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 500,\n    \"message\": \"Encountered an exception while processing the request.\"\n}"
+                        }
                     }
                 },
                 "operationType": "gloop",
@@ -206,18 +384,37 @@
             },
             "post": {
                 "tags": [
-                    "product-line"
+                    "Product Lines"
                 ],
-                "description": "Create a product line",
+                "summary": "Add a new product line",
+                "description": "Creates a new category of products.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "bodyParameter": {
                     "name": "productLine",
                     "description": "productLine"
                 },
                 "responses": {
-                    "-1": {
+                    "201": {
                         "body": "response",
-                        "description": "* 400 if there's an SQLIntegrityConstraintViolationException. This means that there must be a duplicate entry for the entry you are trying to create\n* 500 if the request encountered a server error",
-                        "headers": "headers"
+                        "description": "If the request is successful.",
+                        "headers": "headers",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"SUCCESS\",\n    \"message\": \"Successfully created product line.\",\n    \"productLine\": {\n        \"productLine\": \"Planes\",\n        \"textDescription\": \"Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers.\",\n        \"customField\": {\n\n        }\n    }\n}"
+                        }
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "If the server encountered an exception while processing the request.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 500,\n    \"message\": \"Encountered an exception while processing the request.\"\n}"
+                        }
                     }
                 },
                 "operationType": "gloop",
@@ -226,17 +423,53 @@
             },
             "patch": {
                 "tags": [
-                    "product-line"
+                    "Product Lines"
                 ],
-                "description": "Update a product line",
+                "summary": "Update a product line",
+                "description": "Updates a product line's details",
+                "consumes": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "bodyParameter": {
                     "name": "productLine",
                     "description": "productLine"
                 },
                 "responses": {
-                    "-1": {
+                    "200": {
                         "body": "response",
-                        "description": "Details about the result of the request\n\n* 201 if the product is created.\n* 400 if there's an SQLIntegrityConstraintViolationException. This means that there must be a duplicate entry for the entry you are trying to create.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error."
+                        "description": "If the request is successful.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"SUCCESS\",\n    \"message\": \"Successfully updated product line.\",\n    \"productLine\": {\n        \"productLine\": \"Planes\",\n        \"textDescription\": \"Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers.\",\n        \"customField\": {\n\n        }\n    }\n}"
+                        }
+                    },
+                    "400": {
+                        "body": "APIException",
+                        "description": "If the update could not be saved due to an error.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 400,\n    \"message\": \"Update could not be saved. Check Martini logs for more info.\"\n}"
+                        }
+                    },
+                    "404": {
+                        "body": "APIException",
+                        "description": "If the product line to be updated could not be found or does not exists.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 404,\n    \"message\": \"No product line with name Planes found.\"\n}"
+                        }
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "If the server encountered an exception while processing the request.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 500,\n    \"message\": \"Encountered an exception while processing the request.\"\n}"
+                        }
                     }
                 },
                 "operationType": "gloop",
@@ -247,27 +480,44 @@
         "/product-lines/{productLineId}": {
             "get": {
                 "tags": [
-                    "product"
+                    "Product Lines"
                 ],
-                "description": "Get a product line from the product line name",
+                "summary": "Retrieves a single product line",
+                "description": "Get a product line from the product line name.",
+                "produces": [
+                    "application/json"
+                ],
                 "parameters": [
                     {
                         "name": "productLineId",
-                        "type": "PATH"
+                        "type": "PATH",
+                        "description": "The unique identifier for this product line"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "body": "productLine",
-                        "description": "A product line"
+                        "body": "response",
+                        "description": "A product line",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"SUCCESS\",\n    \"message\": \"Successfully fetched product line.\",\n    \"productLine\": {\n        \"productLine\": \"Planes\",\n        \"textDescription\": \"Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers.\",\n        \"customField\": {\n\n        }\n    }\n}"
+                        }
                     },
                     "404": {
-                        "body": "response",
-                        "description": "product line not found"
+                        "body": "APIException",
+                        "description": "product line not found",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 404,\n    \"message\": \"No product line with name Planes found.\"\n}"
+                        }
                     },
                     "500": {
-                        "body": "response",
-                        "description": "Unexpected exception thrown"
+                        "body": "APIException",
+                        "description": "Unexpected exception thrown",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 500,\n    \"message\": \"Encountered an exception while processing the request.\"\n}"
+                        }
                     }
                 },
                 "operationType": "gloop",
@@ -276,19 +526,51 @@
             },
             "delete": {
                 "tags": [
-                    "product"
+                    "Product Lines"
                 ],
-                "description": "Delete a product line by product line name",
+                "summary": "Deletes a product line",
+                "produces": [
+                    "application/json"
+                ],
                 "parameters": [
                     {
                         "name": "productLineId",
-                        "type": "PATH"
+                        "type": "PATH",
+                        "description": "The name of the product line to be deleted."
                     }
                 ],
                 "responses": {
-                    "-1": {
+                    "200": {
                         "body": "response",
-                        "description": "* 204 if the product line is successfully deleted.\n* 404 If the requested product to update could not be found.\n* 500 if the request encountered a server error."
+                        "description": "If the product was successfully deleted",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"SUCCESS\",\n    \"message\": \"Successfully deleted product line.\"\n}"
+                        }
+                    },
+                    "400": {
+                        "body": "APIException",
+                        "description": "If the server encountered an error while processing the delete request.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 400,\n    \"message\": \"Unable to delete product line S700_1691 due to an error. See Martini Logs for more info.\"\n}"
+                        }
+                    },
+                    "404": {
+                        "body": "APIException",
+                        "description": "If the product line to be deleted could not be found, or does not exists.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 404,\n    \"message\": \"No product line with name Planes found.\"\n}"
+                        }
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "If the server encountered an exception while processing the request.",
+                        "responseBodyMockData": {
+                            "mockDataType": "JSON",
+                            "mockData": "{\n    \"result\": \"ERROR\",\n    \"httpErrorCode\": 500,\n    \"message\": \"Encountered an exception while processing the request.\"\n}"
+                        }
                     }
                 },
                 "operationType": "gloop",
@@ -296,5 +578,21 @@
                 "responseCodeField": "responseCode"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Products",
+            "description": "Operations related to products.",
+            "externalDocumentation": {
+                "url": "https://example.com"
+            }
+        },
+        {
+            "name": "Product Lines",
+            "description": "Operations related to product lines.",
+            "externalDocumentation": {
+                "url": "http://example.com"
+            }
+        }
+    ]
 }

@@ -4,19 +4,46 @@
             "name": "productCode"
         },
         {
-            "name": "quantity",
-            "type": "integer"
+            "name": "input",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "quantity",
+                    "type": "integer",
+                    "comments": "The amout to increase, or decrease"
+                },
+                {
+                    "name": "method",
+                    "comments": "The update method to apply. Applicable values are INCREASE, or DECREASE",
+                    "choices": [
+                        "INCREASE",
+                        "DECREASE"
+                    ]
+                }
+            ]
         }
     ],
     "output": [
         {
             "name": "response",
             "type": "model",
-            "reference": "io.toro.mock.product.model.Response"
+            "reference": "io.toro.mock.product.model.Response",
+            "gloopProperties": [
+                {
+                    "name": "product",
+                    "type": "model",
+                    "reference": "io.toro.mock.product.model.product.Product"
+                }
+            ]
         },
         {
             "name": "responseCode",
             "type": "integer"
+        },
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
         }
     ],
     "steps": [
@@ -37,7 +64,15 @@
                                         {
                                             "name": "response",
                                             "type": "model",
-                                            "reference": "io.toro.mock.product.model.Response"
+                                            "reference": "io.toro.mock.product.model.Response",
+                                            "allowExtraProperties": true,
+                                            "gloopProperties": [
+                                                {
+                                                    "name": "product",
+                                                    "type": "model",
+                                                    "reference": "io.toro.mock.product.model.product.Product"
+                                                }
+                                            ]
                                         },
                                         {
                                             "name": "responseCode",
@@ -61,20 +96,46 @@
                     "outputs": [
                         {
                             "from": [
+                                "responseCode"
+                            ],
+                            "to": [
+                                "getProductResponse",
+                                "responseCode"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "APIException"
+                            ],
+                            "to": [
+                                "APIException"
+                            ]
+                        },
+                        {
+                            "from": [
                                 "response"
                             ],
                             "to": [
                                 "getProductResponse",
                                 "response"
                             ]
-                        },
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "info",
+                    "parameters": [
+                        "java.lang.String"
+                    ],
+                    "inputs": [
                         {
-                            "from": [
-                                "responseCode"
-                            ],
+                            "type": "set",
+                            "expression": "response.product.quantityInStock",
+                            "evaluate": true,
                             "to": [
-                                "getProductResponse",
-                                "responseCode"
+                                "message"
                             ]
                         }
                     ]
@@ -88,11 +149,10 @@
                             "lines": [
                                 {
                                     "from": [
-                                        "getProductResponse",
-                                        "response"
+                                        "APIException"
                                     ],
                                     "to": [
-                                        "response"
+                                        "APIException"
                                     ]
                                 },
                                 {
@@ -112,7 +172,7 @@
                             "children": [
                                 {
                                     "type": "fork",
-                                    "expression": "quantity < 0",
+                                    "expression": "input.quantity < 0",
                                     "children": [
                                         {
                                             "type": "invokeCode",
@@ -133,15 +193,6 @@
                                             ],
                                             "outputs": [
                                                 {
-                                                    "from": [
-                                                        "output"
-                                                    ],
-                                                    "to": [
-                                                        "response",
-                                                        "message"
-                                                    ]
-                                                },
-                                                {
                                                     "type": "set",
                                                     "expression": "400",
                                                     "to": [
@@ -149,62 +200,272 @@
                                                     ]
                                                 },
                                                 {
+                                                    "from": [
+                                                        "output"
+                                                    ],
+                                                    "to": [
+                                                        "APIException",
+                                                        "message"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "set",
+                                                    "expression": "400",
+                                                    "to": [
+                                                        "APIException",
+                                                        "httpErrorCode"
+                                                    ]
+                                                },
+                                                {
                                                     "type": "set",
                                                     "expression": "ERROR",
                                                     "to": [
-                                                        "response",
+                                                        "APIException",
                                                         "result"
                                                     ]
                                                 }
                                             ]
                                         },
                                         {
-                                            "type": "invokeGloop",
+                                            "type": "block",
                                             "label": "false",
-                                            "name": "io.toro.mock.product.sql.product.UpdateProductQuantity",
-                                            "inputs": [
+                                            "children": [
                                                 {
-                                                    "from": [
-                                                        "productCode"
+                                                    "declare": [
+                                                        {
+                                                            "variables": [
+                                                                {
+                                                                    "name": "finalQuantity",
+                                                                    "type": "integer"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "fork",
+                                                    "expression": "input.method",
+                                                    "children": [
+                                                        {
+                                                            "type": "block",
+                                                            "label": "DECREASE",
+                                                            "children": [
+                                                                {
+                                                                    "type": "fork",
+                                                                    "expression": "getProductResponse.response.product.quantityInStock > input.quantity",
+                                                                    "children": [
+                                                                        {
+                                                                            "label": "true",
+                                                                            "comments": "trol",
+                                                                            "lines": [
+                                                                                {
+                                                                                    "type": "set",
+                                                                                    "expression": "getProductResponse.response.product.quantityInStock - input.quantity",
+                                                                                    "evaluate": true,
+                                                                                    "to": [
+                                                                                        "finalQuantity"
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        {
+                                                                            "type": "block",
+                                                                            "label": "false",
+                                                                            "children": [
+                                                                                {
+                                                                                    "lines": [
+                                                                                        {
+                                                                                            "type": "set",
+                                                                                            "expression": "ERROR",
+                                                                                            "to": [
+                                                                                                "APIException",
+                                                                                                "result"
+                                                                                            ]
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "set",
+                                                                                            "expression": "400",
+                                                                                            "to": [
+                                                                                                "APIException",
+                                                                                                "httpErrorCode"
+                                                                                            ]
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "set",
+                                                                                            "expression": "The quantity to decrease must not be greater than the current quantity in stock",
+                                                                                            "to": [
+                                                                                                "APIException",
+                                                                                                "message"
+                                                                                            ]
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "set",
+                                                                                            "expression": "400",
+                                                                                            "to": [
+                                                                                                "responseCode"
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                {
+                                                                                    "type": "break",
+                                                                                    "expression": "$gloopService"
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "label": "INCREASE",
+                                                            "lines": [
+                                                                {
+                                                                    "type": "set",
+                                                                    "expression": "getProductResponse.response.product.quantityInStock + input.quantity",
+                                                                    "evaluate": true,
+                                                                    "to": [
+                                                                        "finalQuantity"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "invokeGloop",
+                                                    "name": "io.toro.mock.product.sql.product.UpdateProductQuantity",
+                                                    "declare": [
+                                                        {
+                                                            "variables": [
+                                                                {
+                                                                    "name": "updated",
+                                                                    "type": "boolean"
+                                                                }
+                                                            ]
+                                                        }
                                                     ],
-                                                    "to": [
-                                                        "updateProductQuantityInput",
-                                                        "productCode"
-                                                    ]
-                                                },
-                                                {
-                                                    "from": [
-                                                        "quantity"
+                                                    "inputs": [
+                                                        {
+                                                            "from": [
+                                                                "productCode"
+                                                            ],
+                                                            "to": [
+                                                                "updateProductQuantityInput",
+                                                                "productCode"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "from": [
+                                                                "finalQuantity"
+                                                            ],
+                                                            "to": [
+                                                                "updateProductQuantityInput",
+                                                                "quantityInStock"
+                                                            ]
+                                                        }
                                                     ],
-                                                    "to": [
-                                                        "updateProductQuantityInput",
-                                                        "quantityInStock"
-                                                    ]
-                                                }
-                                            ],
-                                            "outputs": [
-                                                {
-                                                    "type": "set",
-                                                    "expression": "Updated",
-                                                    "to": [
-                                                        "response",
-                                                        "result"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "set",
-                                                    "expression": "\"Successfully updated quantity of product with product code: ${productCode} with value ${quantity}.\"",
-                                                    "evaluate": true,
-                                                    "to": [
-                                                        "response",
-                                                        "message"
+                                                    "outputs": [
+                                                        {
+                                                            "type": "set",
+                                                            "expression": "200",
+                                                            "to": [
+                                                                "responseCode"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "set",
+                                                            "expression": "$gloopOutput.updateCount > 0",
+                                                            "evaluate": true,
+                                                            "to": [
+                                                                "updated"
+                                                            ]
+                                                        }
                                                     ]
                                                 },
                                                 {
-                                                    "type": "set",
-                                                    "expression": "200",
-                                                    "to": [
-                                                        "responseCode"
+                                                    "type": "fork",
+                                                    "expression": "updated",
+                                                    "children": [
+                                                        {
+                                                            "label": "true",
+                                                            "lines": [
+                                                                {
+                                                                    "from": [
+                                                                        "getProductResponse",
+                                                                        "response",
+                                                                        "product"
+                                                                    ],
+                                                                    "to": [
+                                                                        "response",
+                                                                        "product"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "from": [
+                                                                        "finalQuantity"
+                                                                    ],
+                                                                    "to": [
+                                                                        "response",
+                                                                        "product",
+                                                                        "quantityInStock"
+                                                                    ],
+                                                                    "priority": 1
+                                                                },
+                                                                {
+                                                                    "type": "set",
+                                                                    "expression": "SUCCESS",
+                                                                    "to": [
+                                                                        "response",
+                                                                        "result"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "type": "set",
+                                                                    "expression": "Successfully updated product stock.",
+                                                                    "to": [
+                                                                        "response",
+                                                                        "message"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "label": "false",
+                                                            "lines": [
+                                                                {
+                                                                    "type": "set",
+                                                                    "expression": "400",
+                                                                    "to": [
+                                                                        "responseCode"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "type": "set",
+                                                                    "expression": "ERROR",
+                                                                    "to": [
+                                                                        "APIException",
+                                                                        "result"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "type": "set",
+                                                                    "expression": "400",
+                                                                    "to": [
+                                                                        "APIException",
+                                                                        "httpErrorCode"
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "type": "set",
+                                                                    "expression": "Failed to update product stock. Check Martini Logs for more info.",
+                                                                    "to": [
+                                                                        "APIException",
+                                                                        "message"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
                                                     ]
                                                 }
                                             ]
@@ -258,16 +519,23 @@
                             "type": "set",
                             "expression": "ERROR",
                             "to": [
-                                "response",
+                                "APIException",
                                 "result"
                             ]
                         },
                         {
                             "type": "set",
-                            "expression": "$gloopException.message",
-                            "evaluate": true,
+                            "expression": "500",
                             "to": [
-                                "response",
+                                "APIException",
+                                "httpErrorCode"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "Encountered an exception while processing the request.",
+                            "to": [
+                                "APIException",
                                 "message"
                             ]
                         }

@@ -51,6 +51,17 @@ mysql.password=
 
 The Product API supports custom fields but note that you can only add and edit custom fields as of this time.
 
+### Sending Authenticated Requests
+
+You can use your ECC account to send authenticated request to the API. Your ECC credentials must be sent in the `Authorization` header in the HTTP request
+
+#### To authenticate a request with basic authentication
+
+1. Combine your email and password with a colon (`:`). e.g. `jdoe@mailinator.com:pa$$w0rd`
+2. Encode the resulting string in Base64
+3. Include an Authorization header in the HTTP request containing the base64-encoded string. Example: ```
+Authorization: Basic amRvZUBtYWlsaW5hdG9yLmNvbTpwYSQkdzByZA==```
+
 ### Operations
 
 The base url is `<host>/api/mock-product-api` where `host` is the location where the Martini instance is deployed. By default, it's `localhost:8080`.
@@ -67,6 +78,7 @@ Returns a list of available products
 ```
 curl -X GET \
   http://localhost:8080/api/mock-product-api/products \
+  -H 'Authorization: Basic <base64-encoded-credentials-string>' \
   -H 'accept: application/json'
 ```
 
@@ -74,23 +86,54 @@ curl -X GET \
 
 If the request is successful, it will return an HTTP status code `200` with the response payload below:
 ```
-[
-    {
-        "productCode": "S10_1678",
-        "productName": "1969 Harley Davidson Ultimate Chopper",
-        "productLine": "Motorcycles",
-        "productScale": "01:10",
-        "productVendor": "Min Lin Diecast",
-        "productDescription": "This replica features working kickstand, front suspension, gear-shift lever, footbrake lever, drive chain, wheels and steering. All parts are particularly delicate due to their precise scale and require special care and attention.",
-        "quantityInStock": 7933,
-        "buyPrice": 48.81,
-        "msrp": 95.70,
-        "customField": {
+{
+    "result": "SUCCESS",
+    "message": "Successfully fetched products.",
+    "products": [
+        {
+            "productCode": "S10_1678",
+            "productName": "1969 Harley Davidson Ultimate Chopper",
+            "productLine": "Motorcycles",
+            "productScale": "01:10",
+            "productVendor": "Min Lin Diecast",
+            "productDescription": "This replica features working kickstand, front suspension, gear-shift lever, footbrake lever, drive chain, wheels and steering. All parts are particularly delicate due to their precise scale and require special care and attention.",
+            "quantityInStock": 7933,
+            "buyPrice": 48.81,
+            "msrp": 95.70,
+            "customField": {
 
+            }
+        },
+        {
+            "productCode": "S10_1949",
+            "productName": "1952 Alpine Renault 1300",
+            "productLine": "Classic Cars",
+            "productScale": "01:10",
+            "productVendor": "Classic Metal Creations",
+            "productDescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+            "quantityInStock": 7305,
+            "buyPrice": 98.58,
+            "msrp": 214.30,
+            "customField": {
+
+            }
+        },
+        {
+            "productCode": "S72_3212",
+            "productName": "Pont Yacht",
+            "productLine": "Ships",
+            "productScale": "02:12",
+            "productVendor": "Unimax Art Galleries",
+            "productDescription": "Measures 38 inches Long x 33 3/4 inches High. Includes a stand.Many extras including rigging, long boats, pilot house, anchors, etc. Comes with 2 masts, all square-rigged",
+            "quantityInStock": 414,
+            "buyPrice": 33.30,
+            "msrp": 54.60,
+            "customField": {
+
+            }
         }
-    },
-    ...
-]
+    ]
+}
 ```
 
 `POST /products`
@@ -105,6 +148,7 @@ Create a new product record
 ```
 curl -X POST \
   http://localhost:8080/api/mock-product-api/products \
+  -H 'Authorization: Basic <base64-encoded-credentials-string>' \
   -H 'Accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -128,8 +172,22 @@ curl -X POST \
 If the request is successful, it will return an HTTP status code `201` with the response payload similar below.
 ```
 {
-    "result": "Created",
-    "message": "Successfully created product with product code: PRD_001."
+    "result": "SUCCESS",
+    "message": "Successfully created product with product code: S700_1691.",
+    "product": {
+        "productCode": "PRD_001",
+        "productName": "F21 - Fighter Jet",
+        "productLine": "Planes",
+        "productScale": "1:100",
+        "productVendor": "Highway 66 Mini Classics",
+        "productDescription": "Die cast metal with lots of gimmicks",
+        "quantityInStock": "100",
+        "buyPrice": "15.55",
+        "msrp": "16.99",
+        "customField": {
+            "testField": "field value"
+        }
+    }
 }
 ```
 
@@ -145,6 +203,7 @@ Alternatively, if you just want to update the product price, or quantity, you ca
 ```
 curl -X PATCH \
   http://localhost:8080/api/mock-product-api/products/ \
+  -H 'Authorization: Basic <base64-encoded-credentials-string>' \
   -H 'Accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -165,7 +224,16 @@ If the request is successful, it will return an HTTP status code `200` with the 
 ```
 {
     "result": "Updated",
-    "message": "Successfully updated product with product code \"PRD_001\"."
+    "message": "Successfully updated product with product code: PRD_001."
+    "product": {
+        "productCode": "PRD_001",
+        "productDescription": "Die cast metal with lots of gimmicks. With foldable wings",
+        "quantityInStock": "10",
+        "buyPrice": "16.55",
+        "msrp": "19.99",
+        "customField": {
+            "testField": "updated field value"
+        }
 }
 ```
 
@@ -178,7 +246,8 @@ Returns a single product record that matches the given `productId`
 **curl**
 ```
 curl -X GET \
-  http://localhost:8080/api/mock-product-api/products/PRD_001 \
+  http://localhost:8080/api/mock-product-api/products/S700_1691 \
+  -H 'Authorization: Basic <base64-encoded-credentials-string>' \
   -H 'Accept: application/json'
 ```
 
@@ -187,17 +256,21 @@ curl -X GET \
 If the request is successful, it will return an HTTP status code `200` with the response payload below.
 ```
 {
-    "productCode": "PRD_001",
-    "productName": "F21 - Fighter Jet",
-    "productLine": "Planes",
-    "productScale": "1:100",
-    "productVendor": "Highway 66 Mini Classics",
-    "productDescription": "Die cast metal with lots of gimmicks. With foldable wings",
-    "quantityInStock": 10,
-    "buyPrice": 16.55,
-    "msrp": 19.99,
-    "customField": {
-        "testField": "updated field value"
+    "result": "SUCCESS",
+    "message": "Successfully fetched product with code: S700_1691",
+    "product": {
+        "productCode": "S700_1691",
+        "productName": "American Airlines: B767-300",
+        "productLine": "Planes",
+        "productScale": "12:40",
+        "productVendor": "Min Lin Diecast",
+        "productDescription": "Exact replia with official logos and insignias and retractable wheels",
+        "quantityInStock": 5841,
+        "buyPrice": 51.15,
+        "msrp": 91.34,
+        "customField": {
+
+        }
     }
 }
 ```
@@ -211,12 +284,19 @@ Deletes a product record that matches the `productId`
 **curl**
 ```
 curl -X DELETE \
+  -H 'Authorization: Basic <base64-encoded-credentials-string>' \
   http://localhost:8080/api/mock-product-api/products/PRD_001
 ```
 
 **Sample Response**
 
-If the request is successful, it will return an HTTP status code of `204`.
+If the request is successful, it will return an HTTP status code of `200`.
+```
+{
+    "result": "SUCCESS",
+    "message": "Successfully deleted product with code: PRD_001"
+}
+```
 
 
 #### Product Lines
@@ -231,6 +311,7 @@ Retrieves a list of all product lines
 ```
 curl -X GET \
   http://localhost:8080/api/mock-product-api/product-lines \
+  -H 'Authorization: Basic <base64-encoded-credentials-string>' \
   -H 'accept: application/json'
 ```
 
@@ -238,16 +319,27 @@ curl -X GET \
 
 If the request is successful, it will return an HTTP status code `200` with the response payload below.
 ```
-[
-    {
-        "productLine": "Classic Cars",
-        "textDescription": "Attention car enthusiasts: Make your wildest car ownership dreams come true. Whether you are looking for classic muscle cars, dream sports cars or movie-inspired miniatures, you will find great choices in this category. These replicas feature superb attention to detail and craftsmanship and offer features such as working steering system, opening forward compartment, opening rear trunk with removable spare wheel, 4-wheel independent spring suspension, and so on. The models range in size from 1:10 to 1:24 scale and include numerous limited edition and several out-of-production vehicles. All models include a certificate of authenticity from their manufacturers and come fully assembled and ready for display in the home or office.",
-        "customField": {
+{
+    "result": "SUCCESS",
+    "message": "Succesfully fetched all product lines.",
+    "productLines": [
+        {
+            "productLine": "Classic Cars",
+            "textDescription": "Attention car enthusiasts: Make your wildest car ownership dreams come true. Whether you are looking for classic muscle cars, dream sports cars or movie-inspired miniatures, you will find great choices in this category. These replicas feature superb attention to detail and craftsmanship and offer features such as working steering system, opening forward compartment, opening rear trunk with removable spare wheel, 4-wheel independent spring suspension, and so on. The models range in size from 1:10 to 1:24 scale and include numerous limited edition and several out-of-production vehicles. All models include a certificate of authenticity from their manufacturers and come fully assembled and ready for display in the home or office.",
+            "customField": {
 
+            }
+        },
+        ...
+        {
+            "productLine": "Vintage Cars",
+            "textDescription": "Our Vintage Car models realistically portray automobiles produced from the early 1900s through the 1940s. Materials used include Bakelite, diecast, plastic and wood. Most of the replicas are in the 1:18 and 1:24 scale sizes, which provide the optimum in detail and accuracy. Prices range from $30.00 up to $180.00 for some special limited edition replicas. All models include a certificate of authenticity from their manufacturers and come fully assembled and ready for display in the home or office.",
+            "customField": {
+
+            }
         }
-    },
-    ...
-]
+    ]
+}
 ```
 
 `POST /product-lines`
@@ -260,11 +352,12 @@ Creates a new product line.
 ```
 curl -X POST \
   http://localhost:8080/api/mock-producty-api/product-lines \
+  -H 'Authorization: Basic <base64-encoded-credentials-string>' \
   -H 'Accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
     "productLine": "New Arrivals",
-    "textDescription": "Items marked as new arrivals",
+    "textDescription": "Items marked as new arrivals.",
     "customField": {
 		"testField": "test value"
     }
@@ -278,8 +371,15 @@ Aside from `textDescription`, you can also include an `htmlDescription` in the r
 If the request is successful, it will return an HTTP status code `201`, with the response payload below:
 ```
 {
-    "result": "Created",
-    "message": "Successfully created product line with id: New Arrivals."
+    "result": "SUCCESS",
+    "message": "Successfully updated product line.",
+    "productLine": {
+        "productLine": "New Arrivals",
+        "textDescription": "Items marked as new arrivals.",
+        "customField": {
+            "testField": "test value"
+        }
+    }
 }
 ```
 
@@ -293,6 +393,7 @@ Updates information about a product line. Providing the `productLine` is require
 ```
 curl -X PATCH \
   http://localhost:8080/api/mock-product-api/products/ \
+  -H 'Authorization: Basic <base64-encoded-credentials-string>' \
   -H 'Accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -309,8 +410,15 @@ curl -X PATCH \
 If the request is successful, it will return an HTTP status code `200`, with response payload below:
 ```
 {
-    "result": "Updated",
-    "message": "Successfully updated product line with id: New Arrivals."
+    "result": "SUCCESS",
+    "message": "Successfully updated product line.",
+    "productLine": {
+        "productLine": "New Arrivals",
+        "textDescription": "Items marked as new arrivals. Updated description",
+        "customField": {
+            "testField": "Updated custom field value"
+        }
+    }
 }
 ```
 
@@ -324,6 +432,7 @@ Returns a single product line record that matches the given `productLineId`.
 ```
 curl -X GET \
   http://localhost:8080/api/mock-product-api/product-lines/New%20Arrivals \
+  -H 'Authorization: Basic <base64-encoded-credentials-string>' \
   -H 'accept: application/json'
 ```
 
@@ -332,10 +441,14 @@ curl -X GET \
 If the request is successful, it will return an HTTP response code `200`, with the response payload below:
 ```
 {
-    "productLine": "New Arrivals",
-    "textDescription": "Items marked as new arrivals. Updated description",
-    "customField": {
-        "testField": "Updated custom field value"
+    "result": "SUCCESS",
+    "message": "Successfully fetched product line.",
+    "productLine": {
+        "productLine": "New Arrivals",
+        "textDescription": "Items marked as new arrivals. Updated description",
+        "customField": {
+            "testField": "Updated custom field value"
+        }
     }
 }
 ```
@@ -350,9 +463,16 @@ Deletes a product line record that matches the given `productLineId`
 ```
 curl -X DELETE \
   http://localhost:8080/api/mock-product-api/product-lines/New%20Arrivals \
+  -H 'Authorization: Basic <base64-encoded-credentials-string>' \
   -H 'accept: application/json'
 ```
 
 **Sample Response**
 
-If the request is successful, it will return an HTTP status code `204`.
+If the request is successful, it will return an HTTP status code `200`.
+```
+{
+    "result": "SUCCESS",
+    "message": "Successfully deleted product line."
+}
+```

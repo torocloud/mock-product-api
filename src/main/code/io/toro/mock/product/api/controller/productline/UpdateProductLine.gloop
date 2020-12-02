@@ -10,11 +10,23 @@
         {
             "name": "response",
             "type": "model",
-            "reference": "io.toro.mock.product.model.Response"
+            "reference": "io.toro.mock.product.model.Response",
+            "gloopProperties": [
+                {
+                    "name": "productLine",
+                    "type": "model",
+                    "reference": "io.toro.mock.product.model.productline.ProductLine"
+                }
+            ]
         },
         {
             "name": "responseCode",
             "type": "integer"
+        },
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
         }
     ],
     "steps": [
@@ -75,6 +87,14 @@
                                 "getProductLineResponse",
                                 "responseCode"
                             ]
+                        },
+                        {
+                            "from": [
+                                "APIException"
+                            ],
+                            "to": [
+                                "APIException"
+                            ]
                         }
                     ]
                 },
@@ -83,73 +103,178 @@
                     "expression": "getProductLineResponse.responseCode",
                     "children": [
                         {
-                            "type": "invokeGloop",
+                            "type": "block",
                             "label": "200",
-                            "name": "io.toro.mock.product.sql.productline.UpdateProductLine",
-                            "inputs": [
+                            "children": [
                                 {
-                                    "from": [
-                                        "productLine",
-                                        "productLine"
+                                    "type": "invokeGloop",
+                                    "name": "io.toro.mock.product.sql.productline.UpdateProductLine",
+                                    "declare": [
+                                        {
+                                            "variables": [
+                                                {
+                                                    "name": "updated",
+                                                    "type": "boolean"
+                                                }
+                                            ]
+                                        }
                                     ],
-                                    "to": [
-                                        "updateProductLineInput",
-                                        "productLine"
-                                    ]
-                                },
-                                {
-                                    "from": [
-                                        "productLine",
-                                        "textDescription"
+                                    "inputs": [
+                                        {
+                                            "from": [
+                                                "productLine",
+                                                "productLine"
+                                            ],
+                                            "to": [
+                                                "updateProductLineInput",
+                                                "productLine"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "productLine",
+                                                "textDescription"
+                                            ],
+                                            "to": [
+                                                "updateProductLineInput",
+                                                "textDescription"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "productLine",
+                                                "htmlDescription"
+                                            ],
+                                            "to": [
+                                                "updateProductLineInput",
+                                                "htmlDescription"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "productLine.customField?.isNullValue()? \"{}\": productLine.customField.asJson(false, false)",
+                                            "evaluate": true,
+                                            "to": [
+                                                "updateProductLineInput",
+                                                "customField"
+                                            ]
+                                        }
                                     ],
-                                    "to": [
-                                        "updateProductLineInput",
-                                        "textDescription"
+                                    "outputs": [
+                                        {
+                                            "type": "set",
+                                            "expression": "200",
+                                            "to": [
+                                                "responseCode"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "$gloopOutput.updateCount > 0",
+                                            "evaluate": true,
+                                            "to": [
+                                                "updated"
+                                            ]
+                                        }
                                     ]
                                 },
                                 {
-                                    "from": [
-                                        "productLine",
-                                        "htmlDescription"
-                                    ],
-                                    "to": [
-                                        "updateProductLineInput",
-                                        "htmlDescription"
-                                    ]
-                                },
-                                {
-                                    "type": "set",
-                                    "expression": "productLine.customField?.isNullValue()? \"{}\": productLine.customField.asJson(false, false)",
-                                    "evaluate": true,
-                                    "to": [
-                                        "updateProductLineInput",
-                                        "customField"
-                                    ]
-                                }
-                            ],
-                            "outputs": [
-                                {
-                                    "type": "set",
-                                    "expression": "200",
-                                    "to": [
-                                        "responseCode"
-                                    ]
-                                },
-                                {
-                                    "type": "set",
-                                    "expression": "Updated",
-                                    "to": [
-                                        "response",
-                                        "result"
-                                    ]
-                                },
-                                {
-                                    "type": "set",
-                                    "expression": "\"Successfully updated product line with id \\\"${productLine.productLine}\\\".\"",
-                                    "evaluate": true,
-                                    "to": [
-                                        "response",
-                                        "message"
+                                    "type": "fork",
+                                    "expression": "updated",
+                                    "children": [
+                                        {
+                                            "type": "block",
+                                            "label": "true",
+                                            "children": [
+                                                {
+                                                    "type": "invokeGloop",
+                                                    "name": "io.toro.mock.product.api.controller.productline.GetProductLine",
+                                                    "inputs": [
+                                                        {
+                                                            "from": [
+                                                                "productLine",
+                                                                "productLine"
+                                                            ],
+                                                            "to": [
+                                                                "productLineId"
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "outputs": [
+                                                        {
+                                                            "from": [
+                                                                "response"
+                                                            ],
+                                                            "to": [
+                                                                "response"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "from": [
+                                                                "responseCode"
+                                                            ],
+                                                            "to": [
+                                                                "responseCode"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "set",
+                                                            "expression": "SUCCESS",
+                                                            "to": [
+                                                                "response",
+                                                                "result"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "set",
+                                                            "expression": "Successfully updated product line.",
+                                                            "to": [
+                                                                "response",
+                                                                "message"
+                                                            ],
+                                                            "priority": 1
+                                                        },
+                                                        {
+                                                            "from": [
+                                                                "APIException"
+                                                            ],
+                                                            "to": [
+                                                                "APIException"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "label": "false",
+                                            "lines": [
+                                                {
+                                                    "type": "set",
+                                                    "expression": "ERROR",
+                                                    "to": [
+                                                        "APIException",
+                                                        "result"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "set",
+                                                    "expression": "400",
+                                                    "to": [
+                                                        "APIException",
+                                                        "httpErrorCode"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "set",
+                                                    "expression": "Update could not be saved. Check Martini logs for more info.",
+                                                    "to": [
+                                                        "APIException",
+                                                        "message"
+                                                    ]
+                                                }
+                                            ]
+                                        }
                                     ]
                                 }
                             ]
@@ -159,20 +284,19 @@
                             "lines": [
                                 {
                                     "from": [
-                                        "getProductLineResponse",
-                                        "responseCode"
+                                        "APIException"
                                     ],
                                     "to": [
-                                        "responseCode"
+                                        "APIException"
                                     ]
                                 },
                                 {
                                     "from": [
                                         "getProductLineResponse",
-                                        "response"
+                                        "responseCode"
                                     ],
                                     "to": [
-                                        "response"
+                                        "responseCode"
                                     ]
                                 }
                             ]

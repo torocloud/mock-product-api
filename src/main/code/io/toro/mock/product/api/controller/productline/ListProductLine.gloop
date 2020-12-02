@@ -1,19 +1,26 @@
 {
     "output": [
         {
-            "name": "productLines",
-            "type": "model",
-            "array": true,
-            "reference": "io.toro.mock.product.model.productline.ProductLine"
-        },
-        {
             "name": "response",
             "type": "model",
-            "reference": "io.toro.mock.product.model.Response"
+            "reference": "io.toro.mock.product.model.Response",
+            "gloopProperties": [
+                {
+                    "name": "productLines",
+                    "type": "model",
+                    "array": true,
+                    "reference": "io.toro.mock.product.model.productline.ProductLine"
+                }
+            ]
         },
         {
             "name": "responseCode",
             "type": "integer"
+        },
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
         }
     ],
     "steps": [
@@ -74,6 +81,7 @@
                     },
                     "output": {
                         "path": [
+                            "response",
                             "productLines"
                         ]
                     },
@@ -86,6 +94,7 @@
                                         "PRODUCT_LINE"
                                     ],
                                     "to": [
+                                        "response",
                                         "productLines",
                                         "productLine"
                                     ]
@@ -96,6 +105,7 @@
                                         "TEXT_DESCRIPTION"
                                     ],
                                     "to": [
+                                        "response",
                                         "productLines",
                                         "textDescription"
                                     ]
@@ -106,6 +116,7 @@
                                         "HTML_DESCRIPTION"
                                     ],
                                     "to": [
+                                        "response",
                                         "productLines",
                                         "htmlDescription"
                                     ]
@@ -141,23 +152,36 @@
                                                 "output"
                                             ],
                                             "to": [
+                                                "response",
                                                 "productLines",
                                                 "customField"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "200",
+                                            "to": [
+                                                "responseCode"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "Successfully fetch all product lines.",
+                                            "to": [
+                                                "response",
+                                                "message"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "SUCCESS",
+                                            "to": [
+                                                "response",
+                                                "result"
                                             ]
                                         }
                                     ]
                                 }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "lines": [
-                        {
-                            "type": "set",
-                            "expression": "200",
-                            "to": [
-                                "responseCode"
                             ]
                         }
                     ]
@@ -205,16 +229,23 @@
                             "type": "set",
                             "expression": "ERROR",
                             "to": [
-                                "response",
+                                "APIException",
                                 "result"
                             ]
                         },
                         {
                             "type": "set",
-                            "expression": "$gloopException.message",
-                            "evaluate": true,
+                            "expression": "500",
                             "to": [
-                                "response",
+                                "APIException",
+                                "httpErrorCode"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "Encountered an exception while processing the request.",
+                            "to": [
+                                "APIException",
                                 "message"
                             ]
                         }

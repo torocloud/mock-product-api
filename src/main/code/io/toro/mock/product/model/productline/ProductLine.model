@@ -4,17 +4,21 @@
     "gloopProperties": [
         {
             "name": "productLine",
+            "comments": "The name of the product line. Also serves as the unique identifier.",
             "maxLength": 255
         },
         {
-            "name": "textDescription"
+            "name": "textDescription",
+            "comments": "The product line's description in plain text."
         },
         {
-            "name": "htmlDescription"
+            "name": "htmlDescription",
+            "comments": "The product line's description in HTML format."
         },
         {
             "name": "customField",
             "type": "model",
+            "comments": "Custom fields for this product line.",
             "allowExtraProperties": true
         }
     ]

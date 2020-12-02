@@ -17,6 +17,11 @@
         {
             "name": "responseCode",
             "type": "integer"
+        },
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
         }
     ],
     "steps": [
@@ -76,6 +81,14 @@
                                 "getProductResponse",
                                 "responseCode"
                             ]
+                        },
+                        {
+                            "from": [
+                                "APIException"
+                            ],
+                            "to": [
+                                "APIException"
+                            ]
                         }
                     ]
                 },
@@ -83,29 +96,6 @@
                     "type": "fork",
                     "expression": "getProductResponse.responseCode",
                     "children": [
-                        {
-                            "label": "$else",
-                            "lines": [
-                                {
-                                    "from": [
-                                        "getProductResponse",
-                                        "response"
-                                    ],
-                                    "to": [
-                                        "response"
-                                    ]
-                                },
-                                {
-                                    "from": [
-                                        "getProductResponse",
-                                        "responseCode"
-                                    ],
-                                    "to": [
-                                        "responseCode"
-                                    ]
-                                }
-                            ]
-                        },
                         {
                             "type": "block",
                             "label": "200",
@@ -133,15 +123,6 @@
                                             ],
                                             "outputs": [
                                                 {
-                                                    "from": [
-                                                        "output"
-                                                    ],
-                                                    "to": [
-                                                        "response",
-                                                        "message"
-                                                    ]
-                                                },
-                                                {
                                                     "type": "set",
                                                     "expression": "400",
                                                     "to": [
@@ -153,6 +134,31 @@
                                                     "expression": "ERROR",
                                                     "to": [
                                                         "response",
+                                                        "result"
+                                                    ]
+                                                },
+                                                {
+                                                    "from": [
+                                                        "output"
+                                                    ],
+                                                    "to": [
+                                                        "APIException",
+                                                        "message"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "set",
+                                                    "expression": "400",
+                                                    "to": [
+                                                        "APIException",
+                                                        "httpErrorCode"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "set",
+                                                    "expression": "ERROR",
+                                                    "to": [
+                                                        "APIException",
                                                         "result"
                                                     ]
                                                 }
@@ -201,7 +207,7 @@
                                                 },
                                                 {
                                                     "type": "set",
-                                                    "expression": "Updated",
+                                                    "expression": "SUCCESS",
                                                     "to": [
                                                         "response",
                                                         "result"
@@ -258,16 +264,23 @@
                             "type": "set",
                             "expression": "ERROR",
                             "to": [
-                                "response",
+                                "APIException",
                                 "result"
                             ]
                         },
                         {
                             "type": "set",
-                            "expression": "$gloopException.message",
-                            "evaluate": true,
+                            "expression": "500",
                             "to": [
-                                "response",
+                                "APIException",
+                                "httpErrorCode"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "Encountered an exception while processing the request.",
+                            "to": [
+                                "APIException",
                                 "message"
                             ]
                         }

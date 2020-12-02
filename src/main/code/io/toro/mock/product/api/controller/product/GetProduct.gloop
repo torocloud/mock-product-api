@@ -6,18 +6,25 @@
     ],
     "output": [
         {
-            "name": "product",
-            "type": "model",
-            "reference": "io.toro.mock.product.model.product.Product"
-        },
-        {
             "name": "response",
             "type": "model",
-            "reference": "io.toro.mock.product.model.Response"
+            "reference": "io.toro.mock.product.model.Response",
+            "gloopProperties": [
+                {
+                    "name": "product",
+                    "type": "model",
+                    "reference": "io.toro.mock.product.model.product.Product"
+                }
+            ]
         },
         {
             "name": "responseCode",
             "type": "integer"
+        },
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
         }
     ],
     "steps": [
@@ -52,9 +59,19 @@
                         {
                             "from": [
                                 "selectProductOutput",
+                                "CUSTOM_FIELD"
+                            ],
+                            "to": [
+                                "customField"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectProductOutput",
                                 "PRODUCT_CODE"
                             ],
                             "to": [
+                                "response",
                                 "product",
                                 "productCode"
                             ]
@@ -65,6 +82,7 @@
                                 "PRODUCT_NAME"
                             ],
                             "to": [
+                                "response",
                                 "product",
                                 "productName"
                             ]
@@ -75,6 +93,7 @@
                                 "PRODUCT_LINE"
                             ],
                             "to": [
+                                "response",
                                 "product",
                                 "productLine"
                             ]
@@ -85,6 +104,7 @@
                                 "PRODUCT_SCALE"
                             ],
                             "to": [
+                                "response",
                                 "product",
                                 "productScale"
                             ]
@@ -95,6 +115,7 @@
                                 "PRODUCT_VENDOR"
                             ],
                             "to": [
+                                "response",
                                 "product",
                                 "productVendor"
                             ]
@@ -105,6 +126,7 @@
                                 "PRODUCT_DESCRIPTION"
                             ],
                             "to": [
+                                "response",
                                 "product",
                                 "productDescription"
                             ]
@@ -115,6 +137,7 @@
                                 "QUANTITY_IN_STOCK"
                             ],
                             "to": [
+                                "response",
                                 "product",
                                 "quantityInStock"
                             ]
@@ -125,6 +148,7 @@
                                 "BUY_PRICE"
                             ],
                             "to": [
+                                "response",
                                 "product",
                                 "buyPrice"
                             ]
@@ -135,24 +159,33 @@
                                 "MSRP"
                             ],
                             "to": [
+                                "response",
                                 "product",
                                 "msrp"
                             ]
                         },
                         {
-                            "from": [
-                                "selectProductOutput",
-                                "CUSTOM_FIELD"
-                            ],
+                            "type": "set",
+                            "expression": "SUCCESS",
                             "to": [
-                                "customField"
+                                "response",
+                                "result"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "\"Successfully fetched product with code: ${productCode}\"",
+                            "evaluate": true,
+                            "to": [
+                                "response",
+                                "message"
                             ]
                         }
                     ]
                 },
                 {
                     "type": "fork",
-                    "expression": "product?.productCode",
+                    "expression": "response?.product?.productCode",
                     "children": [
                         {
                             "type": "invokeCode",
@@ -166,7 +199,7 @@
                             "inputs": [
                                 {
                                     "type": "set",
-                                    "expression": "\"No product with code \\\"${productCode}\\\" found.\"",
+                                    "expression": "\"No product with code ${productCode} found.\"",
                                     "evaluate": true,
                                     "to": [
                                         "message"
@@ -175,27 +208,35 @@
                             ],
                             "outputs": [
                                 {
-                                    "from": [
-                                        "output"
-                                    ],
+                                    "type": "set",
+                                    "expression": "404",
                                     "to": [
-                                        "response",
-                                        "message"
+                                        "responseCode"
                                     ]
                                 },
                                 {
                                     "type": "set",
-                                    "expression": "Not found",
+                                    "expression": "ERROR",
                                     "to": [
-                                        "response",
+                                        "APIException",
                                         "result"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "output"
+                                    ],
+                                    "to": [
+                                        "APIException",
+                                        "message"
                                     ]
                                 },
                                 {
                                     "type": "set",
                                     "expression": "404",
                                     "to": [
-                                        "responseCode"
+                                        "APIException",
+                                        "httpErrorCode"
                                     ]
                                 }
                             ]
@@ -225,19 +266,20 @@
                                     ],
                                     "outputs": [
                                         {
-                                            "from": [
-                                                "output"
-                                            ],
-                                            "to": [
-                                                "product",
-                                                "customField"
-                                            ]
-                                        },
-                                        {
                                             "type": "set",
                                             "expression": "200",
                                             "to": [
                                                 "responseCode"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "output"
+                                            ],
+                                            "to": [
+                                                "response",
+                                                "product",
+                                                "customField"
                                             ]
                                         }
                                     ]

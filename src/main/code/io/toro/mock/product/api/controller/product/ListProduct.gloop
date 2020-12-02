@@ -1,19 +1,26 @@
 {
     "output": [
         {
-            "name": "products",
-            "type": "model",
-            "array": true,
-            "reference": "io.toro.mock.product.model.product.Product"
-        },
-        {
             "name": "response",
             "type": "model",
-            "reference": "io.toro.mock.product.model.Response"
+            "reference": "io.toro.mock.product.model.Response",
+            "gloopProperties": [
+                {
+                    "name": "products",
+                    "type": "model",
+                    "array": true,
+                    "reference": "io.toro.mock.product.model.product.Product"
+                }
+            ]
         },
         {
             "name": "responseCode",
             "type": "integer"
+        },
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
         }
     ],
     "steps": [
@@ -117,6 +124,7 @@
                     },
                     "output": {
                         "path": [
+                            "response",
                             "products"
                         ]
                     },
@@ -129,6 +137,7 @@
                                         "PRODUCT_CODE"
                                     ],
                                     "to": [
+                                        "response",
                                         "products",
                                         "productCode"
                                     ]
@@ -139,6 +148,7 @@
                                         "PRODUCT_NAME"
                                     ],
                                     "to": [
+                                        "response",
                                         "products",
                                         "productName"
                                     ]
@@ -149,6 +159,7 @@
                                         "PRODUCT_LINE"
                                     ],
                                     "to": [
+                                        "response",
                                         "products",
                                         "productLine"
                                     ]
@@ -159,6 +170,7 @@
                                         "PRODUCT_SCALE"
                                     ],
                                     "to": [
+                                        "response",
                                         "products",
                                         "productScale"
                                     ]
@@ -169,6 +181,7 @@
                                         "PRODUCT_VENDOR"
                                     ],
                                     "to": [
+                                        "response",
                                         "products",
                                         "productVendor"
                                     ]
@@ -179,6 +192,7 @@
                                         "PRODUCT_DESCRIPTION"
                                     ],
                                     "to": [
+                                        "response",
                                         "products",
                                         "productDescription"
                                     ]
@@ -189,6 +203,7 @@
                                         "QUANTITY_IN_STOCK"
                                     ],
                                     "to": [
+                                        "response",
                                         "products",
                                         "quantityInStock"
                                     ]
@@ -199,6 +214,7 @@
                                         "BUY_PRICE"
                                     ],
                                     "to": [
+                                        "response",
                                         "products",
                                         "buyPrice"
                                     ]
@@ -209,6 +225,7 @@
                                         "MSRP"
                                     ],
                                     "to": [
+                                        "response",
                                         "products",
                                         "msrp"
                                     ]
@@ -239,6 +256,7 @@
                                         "output"
                                     ],
                                     "to": [
+                                        "response",
                                         "products",
                                         "customField"
                                     ]
@@ -254,6 +272,22 @@
                             "expression": "200",
                             "to": [
                                 "responseCode"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "SUCCESS",
+                            "to": [
+                                "response",
+                                "result"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "Successfully fetched products.",
+                            "to": [
+                                "response",
+                                "message"
                             ]
                         }
                     ]
@@ -301,17 +335,24 @@
                             "type": "set",
                             "expression": "ERROR",
                             "to": [
-                                "response",
+                                "APIException",
                                 "result"
                             ]
                         },
                         {
                             "type": "set",
-                            "expression": "$gloopException.message",
-                            "evaluate": true,
+                            "expression": "Encountered an exception while processing the request.",
                             "to": [
-                                "response",
+                                "APIException",
                                 "message"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "APIException",
+                                "httpErrorCode"
                             ]
                         }
                     ]

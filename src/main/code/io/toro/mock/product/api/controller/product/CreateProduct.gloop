@@ -14,7 +14,14 @@
         {
             "name": "response",
             "type": "model",
-            "reference": "io.toro.mock.product.model.Response"
+            "reference": "io.toro.mock.product.model.Response",
+            "gloopProperties": [
+                {
+                    "name": "product",
+                    "type": "model",
+                    "reference": "io.toro.mock.product.model.product.Product"
+                }
+            ]
         },
         {
             "name": "responseCode",
@@ -24,6 +31,11 @@
             "name": "headers",
             "type": "model",
             "allowExtraProperties": true
+        },
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
         }
     ],
     "steps": [
@@ -34,6 +46,16 @@
                 {
                     "type": "invokeGloop",
                     "name": "io.toro.mock.product.sql.product.InsertProduct",
+                    "declare": [
+                        {
+                            "variables": [
+                                {
+                                    "name": "productCreated",
+                                    "type": "boolean"
+                                }
+                            ]
+                        }
+                    ],
                     "inputs": [
                         {
                             "from": [
@@ -159,6 +181,135 @@
                                 "response",
                                 "result"
                             ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "$gloopOutput.updateCount > 0",
+                            "evaluate": true,
+                            "to": [
+                                "productCreated"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "fork",
+                    "expression": "productCreated",
+                    "children": [
+                        {
+                            "label": "true",
+                            "lines": [
+                                {
+                                    "from": [
+                                        "product",
+                                        "productCode"
+                                    ],
+                                    "to": [
+                                        "response",
+                                        "product",
+                                        "productCode"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "product",
+                                        "productName"
+                                    ],
+                                    "to": [
+                                        "response",
+                                        "product",
+                                        "productName"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "product",
+                                        "productLine"
+                                    ],
+                                    "to": [
+                                        "response",
+                                        "product",
+                                        "productLine"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "product",
+                                        "productScale"
+                                    ],
+                                    "to": [
+                                        "response",
+                                        "product",
+                                        "productScale"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "product",
+                                        "productVendor"
+                                    ],
+                                    "to": [
+                                        "response",
+                                        "product",
+                                        "productVendor"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "product",
+                                        "productDescription"
+                                    ],
+                                    "to": [
+                                        "response",
+                                        "product",
+                                        "productDescription"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "product",
+                                        "quantityInStock"
+                                    ],
+                                    "to": [
+                                        "response",
+                                        "product",
+                                        "quantityInStock"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "product",
+                                        "buyPrice"
+                                    ],
+                                    "to": [
+                                        "response",
+                                        "product",
+                                        "buyPrice"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "product",
+                                        "msrp"
+                                    ],
+                                    "to": [
+                                        "response",
+                                        "product",
+                                        "msrp"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "product",
+                                        "customField"
+                                    ],
+                                    "to": [
+                                        "response",
+                                        "product",
+                                        "customField"
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -260,122 +411,63 @@
             ],
             "catch": [
                 {
-                    "type": "fork",
-                    "comments": "Check if the exception caught is an SQL Exception",
-                    "expression": "$gloopException.type == \"SQLIntegrityConstraintViolationException\"",
-                    "children": [
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
                         {
-                            "type": "invokeCode",
-                            "label": "true",
-                            "comments": "If the exception caught is an SQLIntegrityConstraintViolationException, set the appropriate response code (400)",
-                            "className": "io.toro.martini.LoggerMethods",
-                            "methodName": "error",
-                            "parameters": [
-                                "java.lang.String",
-                                "java.lang.Throwable"
+                            "from": [
+                                "$gloopException",
+                                "realException"
                             ],
-                            "inputs": [
-                                {
-                                    "from": [
-                                        "$gloopException",
-                                        "realException"
-                                    ],
-                                    "to": [
-                                        "throwable"
-                                    ]
-                                },
-                                {
-                                    "from": [
-                                        "$gloopException",
-                                        "gloopStackTrace"
-                                    ],
-                                    "to": [
-                                        "message"
-                                    ]
-                                }
-                            ],
-                            "outputs": [
-                                {
-                                    "type": "set",
-                                    "expression": "400",
-                                    "to": [
-                                        "responseCode"
-                                    ]
-                                },
-                                {
-                                    "type": "set",
-                                    "expression": "ERROR",
-                                    "to": [
-                                        "response",
-                                        "result"
-                                    ]
-                                },
-                                {
-                                    "type": "set",
-                                    "expression": "$gloopException.message",
-                                    "evaluate": true,
-                                    "to": [
-                                        "response",
-                                        "message"
-                                    ]
-                                }
+                            "to": [
+                                "throwable"
                             ]
                         },
                         {
-                            "type": "invokeCode",
-                            "label": "false",
-                            "comments": "If it's not an SQLIntegretyConstraintViolationException, set the approriate response code (500)",
-                            "className": "io.toro.martini.LoggerMethods",
-                            "methodName": "error",
-                            "parameters": [
-                                "java.lang.String",
-                                "java.lang.Throwable"
+                            "from": [
+                                "$gloopException",
+                                "gloopStackTrace"
                             ],
-                            "inputs": [
-                                {
-                                    "from": [
-                                        "$gloopException",
-                                        "realException"
-                                    ],
-                                    "to": [
-                                        "throwable"
-                                    ]
-                                },
-                                {
-                                    "from": [
-                                        "$gloopException",
-                                        "gloopStackTrace"
-                                    ],
-                                    "to": [
-                                        "message"
-                                    ]
-                                }
-                            ],
-                            "outputs": [
-                                {
-                                    "type": "set",
-                                    "expression": "500",
-                                    "to": [
-                                        "responseCode"
-                                    ]
-                                },
-                                {
-                                    "type": "set",
-                                    "expression": "$gloopException.message",
-                                    "evaluate": true,
-                                    "to": [
-                                        "response",
-                                        "message"
-                                    ]
-                                },
-                                {
-                                    "type": "set",
-                                    "expression": "ERROR",
-                                    "to": [
-                                        "response",
-                                        "result"
-                                    ]
-                                }
+                            "to": [
+                                "message"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "responseCode"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "ERROR",
+                            "to": [
+                                "APIException",
+                                "result"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "Encountered an exception while processing the request.",
+                            "to": [
+                                "APIException",
+                                "message"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "APIException",
+                                "httpErrorCode"
                             ]
                         }
                     ]

@@ -13,6 +13,11 @@
             "name": "response",
             "type": "model",
             "reference": "io.toro.mock.product.model.Response"
+        },
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
         }
     ],
     "steps": [
@@ -37,7 +42,14 @@
                                         {
                                             "name": "response",
                                             "type": "model",
-                                            "reference": "io.toro.mock.product.model.Response"
+                                            "reference": "io.toro.mock.product.model.Response",
+                                            "gloopProperties": [
+                                                {
+                                                    "name": "product",
+                                                    "type": "model",
+                                                    "reference": "io.toro.mock.product.model.product.Product"
+                                                }
+                                            ]
                                         }
                                     ]
                                 }
@@ -72,6 +84,14 @@
                                 "getProductResponse",
                                 "response"
                             ]
+                        },
+                        {
+                            "from": [
+                                "APIException"
+                            ],
+                            "to": [
+                                "APIException"
+                            ]
                         }
                     ]
                 },
@@ -97,7 +117,7 @@
                             "outputs": [
                                 {
                                     "type": "set",
-                                    "expression": "204",
+                                    "expression": "200",
                                     "to": [
                                         "responseCode"
                                     ]
@@ -112,7 +132,7 @@
                                 },
                                 {
                                     "type": "set",
-                                    "expression": "\"Successfully deleted product with product code \\\"${productCode}\\\".\"",
+                                    "expression": "\"Successfully deleted product with code: ${productCode}.\"",
                                     "evaluate": true,
                                     "to": [
                                         "response",
@@ -135,11 +155,10 @@
                                 },
                                 {
                                     "from": [
-                                        "getProductResponse",
-                                        "response"
+                                        "APIException"
                                     ],
                                     "to": [
-                                        "response"
+                                        "APIException"
                                     ]
                                 }
                             ]
@@ -189,16 +208,23 @@
                             "type": "set",
                             "expression": "ERROR",
                             "to": [
-                                "response",
+                                "APIException",
                                 "result"
                             ]
                         },
                         {
                             "type": "set",
-                            "expression": "$gloopException.message",
-                            "evaluate": true,
+                            "expression": "500",
                             "to": [
-                                "response",
+                                "APIException",
+                                "httpErrorCode"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "Encountered an exception while processing the request.",
+                            "to": [
+                                "APIException",
                                 "message"
                             ]
                         }
